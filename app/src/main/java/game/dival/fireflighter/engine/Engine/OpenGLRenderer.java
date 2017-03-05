@@ -23,7 +23,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
-        gl10.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+        gl10.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         gl10.glEnable(GL10.GL_CULL_FACE);
         gl10.glCullFace(GL10.GL_BACK);
     }
@@ -47,6 +47,9 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
         // When using GL_MODELVIEW, you must set the camera view
         gl10.glClear(GL_COLOR_BUFFER_BIT);
-        GLU.gluLookAt(gl10, 0, 0, -5, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        GLU.gluLookAt(gl10,
+                0, 0, -5,
+                0f, 0f, 0f,
+                0f, 1.0f, 0.0f);
     }
 }

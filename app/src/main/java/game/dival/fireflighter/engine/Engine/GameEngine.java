@@ -14,6 +14,7 @@ public class GameEngine {
     public final int SCREEN_WIDTH, SCREEN_HEIGHT;
 
     private GLSurfaceView surface;
+    private OpenGLRenderer openGLRenderer;
     private Activity activity;
 
     private boolean runningEngine;
@@ -26,7 +27,8 @@ public class GameEngine {
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         surface.setEGLContextClientVersion(2);
-        surface.setRenderer(new OpenGLRenderer(this, gameUpdates));
+        openGLRenderer = new OpenGLRenderer(this, gameUpdates);
+        surface.setRenderer(openGLRenderer);
 
         hideSystemUI();
     }
