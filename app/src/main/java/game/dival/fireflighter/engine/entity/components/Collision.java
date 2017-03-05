@@ -1,8 +1,9 @@
-package game.dival.fireflighter.engine.Engine.gameentity;
+package game.dival.fireflighter.engine.entity.components;
 
 import java.util.ArrayList;
 
-import game.dival.fireflighter.engine.Engine.math.Vector3D;
+import game.dival.fireflighter.engine.entity.Entity;
+import game.dival.fireflighter.engine.math.Vector3D;
 
 /**
  * Created by arauj on 05/03/2017.
@@ -31,11 +32,6 @@ abstract class Collision extends Component {
     public void clearCollidesListener() {
         entitiesToCollide.clear();
     }
-
-    /**
-     * Async method to detect collision
-     */
-    abstract void checkForCollision();
 
     public interface CollisionListener {
         void onCollision(Entity entity1, Entity entity2);

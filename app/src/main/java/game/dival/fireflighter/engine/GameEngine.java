@@ -1,10 +1,16 @@
-package game.dival.fireflighter.engine.Engine;
+package game.dival.fireflighter.engine;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.view.View;
+
+import java.util.ArrayList;
+
+import game.dival.fireflighter.engine.entity.Entity;
+import game.dival.fireflighter.engine.entity.components.Component;
+
 
 /**
  * Created by arauj on 24/02/2017.
@@ -16,6 +22,8 @@ public class GameEngine {
     private GLSurfaceView surface;
     private OpenGLRenderer openGLRenderer;
     private Activity activity;
+
+    public ArrayList<Entity> entities;
 
     private boolean runningEngine;
 
@@ -31,6 +39,7 @@ public class GameEngine {
         surface.setRenderer(openGLRenderer);
 
         hideSystemUI();
+        entities = new ArrayList<>();
     }
 
     public void pause() {
@@ -82,6 +91,18 @@ public class GameEngine {
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    }
+
+    /**
+     * Update engine, need to be called manually to game runs
+     * It will update MOVEMENT, PHYSICS, COLLISIONS of all entities
+     */
+    public void engneUpdate() {
+        for (Entity entity : entities) {
+            for (Component component : entity.components) {
+                component.run(this);
+            }
+        }
     }
 
     public interface GameUpdates {

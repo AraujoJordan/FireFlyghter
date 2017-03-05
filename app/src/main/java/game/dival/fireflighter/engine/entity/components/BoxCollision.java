@@ -1,9 +1,11 @@
-package game.dival.fireflighter.engine.Engine.gameentity;
+package game.dival.fireflighter.engine.entity.components;
+
 
 import android.os.AsyncTask;
 
-import game.dival.fireflighter.engine.Engine.GameEngine;
-import game.dival.fireflighter.engine.Engine.math.Vector3D;
+import game.dival.fireflighter.engine.GameEngine;
+import game.dival.fireflighter.engine.entity.Entity;
+import game.dival.fireflighter.engine.math.Vector3D;
 
 /**
  * Created by arauj on 05/03/2017.
@@ -43,17 +45,17 @@ public class BoxCollision extends Collision {
      */
     private void updateBoxPosition() {
         try {
-            transPropIndex = parentEntity.updateTransformationIndex(transPropIndex);
-            modelPropIndex = parentEntity.updateModelIndex(modelPropIndex);
+            transPropIndex = parentEntity.getTransformation(transPropIndex);
+            modelPropIndex = parentEntity.getGameModel(modelPropIndex);
         } catch (NullPointerException npe) {
             throw new RuntimeException("Error on " + getClass().getCanonicalName() + " updateIndex() method: " + npe.getMessage());
         }
 
-        Transformation transformation = (Transformation) parentEntity.properties.get(transPropIndex);
+        Transformation transformation = (Transformation) parentEntity.components.get(transPropIndex);
         Vector3D location = transformation.location;
 
         if (fixedWidth == -1 || fixedHeight == -1 || fixedDepth == -1) { //init box size
-            Model model = (Model) parentEntity.properties.get(modelPropIndex);
+            Model model = (Model) parentEntity.components.get(modelPropIndex);
             fixedWidth = model.width;
             fixedHeight = model.height;
             fixedDepth = model.depth;
@@ -77,13 +79,14 @@ public class BoxCollision extends Collision {
     public void run(GameEngine engine) {
         if (!hasFixedPosition)
             updateBoxPosition();
+        checkForCollision();
     }
 
     /**
      * Async method to detect collision
      */
-    @Override
-    void checkForCollision() {
+    public void checkForCollision() {
+
     }
 
     private class CheckForCollision extends AsyncTask<Entity, Entity, Void> {
@@ -92,8 +95,8 @@ public class BoxCollision extends Collision {
             for (Entity entityToCollide : entities) {
                 if (isCancelled()) break;
 
-                int otherIndex = entityToCollide.updateBoxColliderIndex(0); //get the other boxCollider index
-                BoxCollision otherBox = (BoxCollision) entityToCollide.properties.get(otherIndex);
+                int otherIndex = entityToCollide.getBoxCollision(0); //get the other boxCollider index
+                BoxCollision otherBox = (BoxCollision) entityToCollide.components.get(otherIndex);
 
 
                 if (!(edges[2].xyz[0] > otherBox.edges[3].xyz[0] || // THIS LEFT EDGE > OTHER RIGHT EDGE

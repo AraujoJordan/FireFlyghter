@@ -1,7 +1,9 @@
-package game.dival.fireflighter.engine.Engine.gameentity;
+package game.dival.fireflighter.engine.entity.components;
 
-import game.dival.fireflighter.engine.Engine.GameEngine;
-import game.dival.fireflighter.engine.Engine.math.Vector3D;
+
+import game.dival.fireflighter.engine.GameEngine;
+import game.dival.fireflighter.engine.entity.Entity;
+import game.dival.fireflighter.engine.math.Vector3D;
 
 /**
  * Created by arauj on 05/03/2017.
@@ -50,9 +52,9 @@ public class Physics extends Component {
         if (hasGravity)
             applyForce(GRAVITY_FORCE);
 
-        transIndex = parentEntity.updateTransformationIndex(transIndex);
+        transIndex = parentEntity.getTransformation(transIndex);
 
-        Transformation transformation = (Transformation) parentEntity.properties.get(transIndex);
+        Transformation transformation = (Transformation) parentEntity.components.get(transIndex);
         transformation.location.add(inertiaVector);
 
     }

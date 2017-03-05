@@ -1,4 +1,4 @@
-package game.dival.fireflighter.engine.Engine;
+package game.dival.fireflighter.engine;
 
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;

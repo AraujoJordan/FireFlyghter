@@ -1,4 +1,4 @@
-package game.dival.fireflighter.engine.Engine.math;
+package game.dival.fireflighter.engine.math;
 
 /**
  * Created by arauj on 24/02/2017.
