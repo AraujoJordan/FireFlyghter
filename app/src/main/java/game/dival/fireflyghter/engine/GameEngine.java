@@ -1,4 +1,4 @@
-package game.dival.fireflighter.engine;
+package game.dival.fireflyghter.engine;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
@@ -8,8 +8,8 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-import game.dival.fireflighter.engine.entity.Entity;
-import game.dival.fireflighter.engine.entity.components.Component;
+import game.dival.fireflyghter.engine.entity.Entity;
+import game.dival.fireflyghter.engine.entity.components.Component;
 
 
 /**

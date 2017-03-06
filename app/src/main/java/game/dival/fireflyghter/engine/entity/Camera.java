@@ -1,7 +1,7 @@
-package game.dival.fireflighter.engine.entity;
+package game.dival.fireflyghter.engine.entity;
 
-import game.dival.fireflighter.engine.GameEngine;
-import game.dival.fireflighter.engine.entity.components.Transformation;
+import game.dival.fireflyghter.engine.GameEngine;
+import game.dival.fireflyghter.engine.entity.components.Transformation;
 
 /**
  * Created by arauj on 05/03/2017.

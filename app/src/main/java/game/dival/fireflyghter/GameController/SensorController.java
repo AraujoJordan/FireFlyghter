@@ -1,10 +1,10 @@
-package game.dival.fireflighter.GameController;
+package game.dival.fireflyghter.GameController;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 
-import game.dival.fireflighter.engine.GameEngine;
+import game.dival.fireflyghter.engine.GameEngine;
 
 
 /**

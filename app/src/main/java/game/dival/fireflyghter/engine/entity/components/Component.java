@@ -1,9 +1,9 @@
-package game.dival.fireflighter.engine.entity.components;
+package game.dival.fireflyghter.engine.entity.components;
 
 import java.util.ArrayList;
 
-import game.dival.fireflighter.engine.GameEngine;
-import game.dival.fireflighter.engine.entity.Entity;
+import game.dival.fireflyghter.engine.GameEngine;
+import game.dival.fireflyghter.engine.entity.Entity;
 
 /**
  * Created by arauj on 05/03/2017.

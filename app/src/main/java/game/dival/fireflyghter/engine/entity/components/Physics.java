@@ -1,9 +1,9 @@
-package game.dival.fireflighter.engine.entity.components;
+package game.dival.fireflyghter.engine.entity.components;
 
 
-import game.dival.fireflighter.engine.GameEngine;
-import game.dival.fireflighter.engine.entity.Entity;
-import game.dival.fireflighter.engine.math.Vector3D;
+import game.dival.fireflyghter.engine.GameEngine;
+import game.dival.fireflyghter.engine.entity.Entity;
+import game.dival.fireflyghter.engine.math.Vector3D;
 
 /**
  * Created by arauj on 05/03/2017.

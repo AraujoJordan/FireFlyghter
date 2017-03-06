@@ -1,9 +1,9 @@
-package game.dival.fireflighter.engine.entity.components;
+package game.dival.fireflyghter.engine.entity.components;
 
 import java.util.ArrayList;
 
-import game.dival.fireflighter.engine.entity.Entity;
-import game.dival.fireflighter.engine.math.Vector3D;
+import game.dival.fireflyghter.engine.entity.Entity;
+import game.dival.fireflyghter.engine.math.Vector3D;
 
 /**
  * Created by arauj on 05/03/2017.
@@ -14,7 +14,7 @@ abstract class Collision extends Component {
     Vector3D[] edges;
 
     //Entities list to check collision (do not add all for the god sake)
-    private ArrayList<Entity> entitiesToCollide;
+    protected ArrayList<Entity> entitiesToCollide;
     protected CollisionListener trigger;
 
     public Collision(Entity parentEntity) {

@@ -1,13 +1,13 @@
-package game.dival.fireflighter.engine.entity;
+package game.dival.fireflyghter.engine.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import game.dival.fireflighter.engine.entity.components.BoxCollision;
-import game.dival.fireflighter.engine.entity.components.Component;
-import game.dival.fireflighter.engine.entity.components.Model;
-import game.dival.fireflighter.engine.entity.components.Physics;
-import game.dival.fireflighter.engine.entity.components.Transformation;
+import game.dival.fireflyghter.engine.entity.components.BoxCollision;
+import game.dival.fireflyghter.engine.entity.components.Component;
+import game.dival.fireflyghter.engine.entity.components.Model3D;
+import game.dival.fireflyghter.engine.entity.components.Physics;
+import game.dival.fireflyghter.engine.entity.components.Transformation;
 
 /**
  * Created by arauj on 05/03/2017.
@@ -51,16 +51,16 @@ public class Entity {
 
 
     /**
-     * Get the index of the first Model component in the list, return the correct index if the old is not updated
+     * Get the index of the first Model3D component in the list, return the correct index if the old is not updated
      *
-     * @param oldIndex the last index with the Model, if -1, it will be crate a new one
+     * @param oldIndex the last index with the Model3D, if -1, it will be crate a new one
      * @return if the oldIndex is the right one, it will be returned, if not, it will search on the list
      */
     public int getGameModel(int oldIndex) {
 
-        Model model;
+        Model3D model3D;
         try {
-            model = (Model) components.get(oldIndex);
+            model3D = (Model3D) components.get(oldIndex);
             return oldIndex;
         } catch (IndexOutOfBoundsException | ClassCastException exception) {
             for (int newIndex = 0; newIndex <= components.size(); newIndex++) {
@@ -68,7 +68,7 @@ public class Entity {
                     return newIndex;
                 }
             }
-            throw new NullPointerException(label + ": Does'nt found Model property index!");
+            throw new NullPointerException(label + ": Does'nt found Model3D property index!");
         }
     }
 

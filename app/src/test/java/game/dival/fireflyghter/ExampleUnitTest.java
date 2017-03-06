@@ -1,4 +1,4 @@
-package game.dival.fireflighter;
+package game.dival.fireflyghter;
 
 import org.junit.Test;
 

@@ -1,11 +1,13 @@
-package game.dival.fireflighter.engine.entity.components;
+package game.dival.fireflyghter.engine.entity.components;
 
 
 import android.os.AsyncTask;
 
-import game.dival.fireflighter.engine.GameEngine;
-import game.dival.fireflighter.engine.entity.Entity;
-import game.dival.fireflighter.engine.math.Vector3D;
+import java.util.ArrayList;
+
+import game.dival.fireflyghter.engine.GameEngine;
+import game.dival.fireflyghter.engine.entity.Entity;
+import game.dival.fireflyghter.engine.math.Vector3D;
 
 /**
  * Created by arauj on 05/03/2017.
@@ -55,24 +57,25 @@ public class BoxCollision extends Collision {
         Vector3D location = transformation.location;
 
         if (fixedWidth == -1 || fixedHeight == -1 || fixedDepth == -1) { //init box size
-            Model model = (Model) parentEntity.components.get(modelPropIndex);
-            fixedWidth = model.width;
-            fixedHeight = model.height;
-            fixedDepth = model.depth;
+            Model3D model3D = (Model3D) parentEntity.components.get(modelPropIndex);
+            fixedWidth = model3D.width;
+            fixedHeight = model3D.height;
+            fixedDepth = model3D.depth;
         }
 
-        if (edges[0] == null) { //init box edges
-            for (Vector3D vector3D : edges)
-                vector3D = new Vector3D();
+        //init box edges (if was not initialized yet)
+        if (edges[0] == null)
+            for (int i = 0; i < edges.length; i++)
+                edges[i] = new Vector3D();
 
-        } else { //update edges
-            edges[0].xyz = new float[]{location.xyz[0], location.xyz[1] + fixedHeight / 2, location.xyz[2]};//UP
-            edges[1].xyz = new float[]{location.xyz[0], location.xyz[1] - fixedHeight / 2, location.xyz[2]};//DOWN
-            edges[2].xyz = new float[]{location.xyz[0] + fixedHeight / 2, location.xyz[1], location.xyz[2]};//LEFT
-            edges[3].xyz = new float[]{location.xyz[0] - fixedHeight / 2, location.xyz[1], location.xyz[2]};//RIGHT
-            edges[4].xyz = new float[]{location.xyz[0], location.xyz[1], location.xyz[2] + fixedHeight / 2};//FRONT
-            edges[5].xyz = new float[]{location.xyz[0], location.xyz[1], location.xyz[2] - fixedHeight / 2};//BACK
-        }
+        //update edges
+        edges[0].xyz = new float[]{location.xyz[0], location.xyz[1] + fixedHeight / 2, location.xyz[2]};//UP
+        edges[1].xyz = new float[]{location.xyz[0], location.xyz[1] - fixedHeight / 2, location.xyz[2]};//DOWN
+        edges[2].xyz = new float[]{location.xyz[0] + fixedHeight / 2, location.xyz[1], location.xyz[2]};//LEFT
+        edges[3].xyz = new float[]{location.xyz[0] - fixedHeight / 2, location.xyz[1], location.xyz[2]};//RIGHT
+        edges[4].xyz = new float[]{location.xyz[0], location.xyz[1], location.xyz[2] + fixedHeight / 2};//FRONT
+        edges[5].xyz = new float[]{location.xyz[0], location.xyz[1], location.xyz[2] - fixedHeight / 2};//BACK
+
     }
 
     @Override
@@ -86,7 +89,17 @@ public class BoxCollision extends Collision {
      * Async method to detect collision
      */
     public void checkForCollision() {
+        int processorCores = Runtime.getRuntime().availableProcessors();
+        int entitiesToCheckByCore = entitiesToCollide.size() / processorCores;
+        int entitiesRest = entitiesToCollide.size() % processorCores;
 
+//        ArrayList<Entity>[] entitiesByCore = new ArrayList()<Entity>[entitiesToCheckByCore];
+
+        for (int identityIndex = 0; identityIndex <= entitiesToCollide.size(); identityIndex++) {
+            for (int coreIndex = 0; coreIndex <= processorCores; coreIndex++) {
+
+            }
+        }
     }
 
     private class CheckForCollision extends AsyncTask<Entity, Entity, Void> {
