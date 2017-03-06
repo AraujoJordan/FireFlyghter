@@ -3,8 +3,6 @@ package game.dival.fireflyghter.engine.entity.components;
 
 import android.os.AsyncTask;
 
-import java.util.ArrayList;
-
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.math.Vector3D;
@@ -18,7 +16,6 @@ public class BoxCollision extends Collision {
     // Optimization of Entity access
     private int transPropIndex = -1;
     private int modelPropIndex = -1;
-    private int thisIndex = -1;
 
     private float fixedWidth = -1;
     private float fixedHeight = -1;
@@ -90,15 +87,17 @@ public class BoxCollision extends Collision {
      */
     public void checkForCollision() {
         int processorCores = Runtime.getRuntime().availableProcessors();
-        int entitiesToCheckByCore = entitiesToCollide.size() / processorCores;
+        int entitiesByCore = entitiesToCollide.size() / processorCores;
         int entitiesRest = entitiesToCollide.size() % processorCores;
 
-//        ArrayList<Entity>[] entitiesByCore = new ArrayList()<Entity>[entitiesToCheckByCore];
-
-        for (int identityIndex = 0; identityIndex <= entitiesToCollide.size(); identityIndex++) {
-            for (int coreIndex = 0; coreIndex <= processorCores; coreIndex++) {
-
+        int index = 0;
+        for (int coreIndex = 0; coreIndex < processorCores; coreIndex++) {
+            Entity[] list = new Entity[entitiesByCore];
+            for (int entIndex = (coreIndex == processorCores-1 ? entitiesByCore + entitiesRest : entitiesByCore);
+                 entIndex > 0; entIndex++) {
+                list[entIndex] = entitiesToCollide.get(index);
             }
+            new CheckForCollision().doInBackground(list);
         }
     }
 
@@ -110,7 +109,6 @@ public class BoxCollision extends Collision {
 
                 int otherIndex = entityToCollide.getBoxCollision(0); //get the other boxCollider index
                 BoxCollision otherBox = (BoxCollision) entityToCollide.components.get(otherIndex);
-
 
                 if (!(edges[2].xyz[0] > otherBox.edges[3].xyz[0] || // THIS LEFT EDGE > OTHER RIGHT EDGE
                         edges[3].xyz[0] < otherBox.edges[2].xyz[0]) || // THIS RIGHT EDGE < OTHER LEFT EDGE
@@ -131,6 +129,5 @@ public class BoxCollision extends Collision {
             super.onProgressUpdate(entity);
             trigger.onCollision(parentEntity, entity[0]);
         }
-
     }
 }
