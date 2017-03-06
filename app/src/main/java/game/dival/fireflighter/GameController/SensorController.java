@@ -4,7 +4,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 
-import game.dival.fireflighter.engine.Engine.GameEngine;
+import game.dival.fireflighter.engine.GameEngine;
+
 
 /**
  * Created by arauj on 24/02/2017.
