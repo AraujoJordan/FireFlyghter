@@ -1,6 +1,6 @@
-# Models
+# Application
 
-FireFlyghter Blender Models are stored in this directory.
+FireFlyghter Android application development.
 
 ## Requirements
 
@@ -10,8 +10,10 @@ Check below the FireFlyghter developer and user requirements.
 
 ### Developer
 
-* Models:
-    * [Blender](https://www.blender.org/)
+* Android:
+    * [Android Studio](https://developer.android.com/studio/index.html)
+    * Minimum SDK: 17
+    * Target SDK: 25
 
 ### User
 
