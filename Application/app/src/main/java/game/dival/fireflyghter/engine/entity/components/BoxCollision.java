@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.entity.Entity;
+import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 import game.dival.fireflyghter.engine.math.Vector3D;
 
 /**
@@ -33,53 +34,53 @@ public class BoxCollision extends Collision {
         super(parentEntity);
         edges = new Vector3D[6];
         this.hasFixedPosition = hasFixedPosition;
-        if (hasFixedPosition)
-            updateBoxPosition();
+//        if (hasFixedPosition)
+//            updateBoxPosition();
 
     }
 
 
-    /**
-     * Update the box collider position (call it wisely)
-     */
-    private void updateBoxPosition() {
-        try {
-            transPropIndex = parentEntity.getTransformation(transPropIndex);
-            modelPropIndex = parentEntity.getGameModel(modelPropIndex);
-        } catch (NullPointerException npe) {
-            throw new RuntimeException("Error on " + getClass().getCanonicalName() + " updateIndex() method: " + npe.getMessage());
-        }
-
-        Transformation transformation = (Transformation) parentEntity.components.get(transPropIndex);
-        Vector3D location = transformation.location;
-
-        if (fixedWidth == -1 || fixedHeight == -1 || fixedDepth == -1) { //init box size
-            Model3D model3D = (Model3D) parentEntity.components.get(modelPropIndex);
-            fixedWidth = model3D.width;
-            fixedHeight = model3D.height;
-            fixedDepth = model3D.depth;
-        }
-
-        //init box edges (if was not initialized yet)
-        if (edges[0] == null)
-            for (int i = 0; i < edges.length; i++)
-                edges[i] = new Vector3D();
-
-        //update edges
-        edges[0].xyz = new float[]{location.xyz[0], location.xyz[1] + fixedHeight / 2, location.xyz[2]};//UP
-        edges[1].xyz = new float[]{location.xyz[0], location.xyz[1] - fixedHeight / 2, location.xyz[2]};//DOWN
-        edges[2].xyz = new float[]{location.xyz[0] + fixedHeight / 2, location.xyz[1], location.xyz[2]};//LEFT
-        edges[3].xyz = new float[]{location.xyz[0] - fixedHeight / 2, location.xyz[1], location.xyz[2]};//RIGHT
-        edges[4].xyz = new float[]{location.xyz[0], location.xyz[1], location.xyz[2] + fixedHeight / 2};//FRONT
-        edges[5].xyz = new float[]{location.xyz[0], location.xyz[1], location.xyz[2] - fixedHeight / 2};//BACK
-
-    }
+//    /**
+//     * Update the box collider position (call it wisely)
+//     */
+//    private void updateBoxPosition() {
+//        try {
+//            transPropIndex = parentEntity.getTransformation(transPropIndex);
+//            modelPropIndex = parentEntity.getModel3D(modelPropIndex);
+//        } catch (NullPointerException npe) {
+//            throw new RuntimeException("Error on " + getClass().getCanonicalName() + " updateIndex() method: " + npe.getMessage());
+//        }
+//
+//        Transformation transformation = (Transformation) parentEntity.components.get(transPropIndex);
+//        Vector3D location = transformation.location;
+//
+//        if (fixedWidth == -1 || fixedHeight == -1 || fixedDepth == -1) { //init box size
+//            Model3D model3D = (Model3D) parentEntity.components.get(modelPropIndex);
+//            fixedWidth = model3D.width;
+//            fixedHeight = model3D.height;
+//            fixedDepth = model3D.depth;
+//        }
+//
+//        //init box edges (if was not initialized yet)
+//        if (edges[0] == null)
+//            for (int i = 0; i < edges.length; i++)
+//                edges[i] = new Vector3D();
+//
+//        //update edges
+//        edges[0].xyz = new float[]{location.xyz[0], location.xyz[1] + fixedHeight / 2, location.xyz[2]};//UP
+//        edges[1].xyz = new float[]{location.xyz[0], location.xyz[1] - fixedHeight / 2, location.xyz[2]};//DOWN
+//        edges[2].xyz = new float[]{location.xyz[0] + fixedHeight / 2, location.xyz[1], location.xyz[2]};//LEFT
+//        edges[3].xyz = new float[]{location.xyz[0] - fixedHeight / 2, location.xyz[1], location.xyz[2]};//RIGHT
+//        edges[4].xyz = new float[]{location.xyz[0], location.xyz[1], location.xyz[2] + fixedHeight / 2};//FRONT
+//        edges[5].xyz = new float[]{location.xyz[0], location.xyz[1], location.xyz[2] - fixedHeight / 2};//BACK
+//
+//    }
 
     @Override
     public void run(GameEngine engine) {
-        if (!hasFixedPosition)
-            updateBoxPosition();
-        checkForCollision();
+//        if (!hasFixedPosition)
+//            updateBoxPosition();
+//        checkForCollision();
     }
 
     /**
@@ -117,7 +118,6 @@ public class BoxCollision extends Collision {
                         edges[4].xyz[2] > otherBox.edges[5].xyz[2] || // THIS FRONT EDGE > OTHER BACK EDGE
                         edges[5].xyz[2] < otherBox.edges[4].xyz[2]) { // THIS BACK EDGE < OTHER FRONT EDGE
                 //OBS, THIS IS IN CARTESIAN, TO INVERT THE Y, CONSULT THIS LINK http://gamedev.stackexchange.com/a/913
-
                     publishProgress(entityToCollide);
                 }
             }

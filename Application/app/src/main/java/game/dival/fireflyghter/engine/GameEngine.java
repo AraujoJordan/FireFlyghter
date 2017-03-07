@@ -8,6 +8,8 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.entity.components.Component;
 
@@ -24,6 +26,7 @@ public class GameEngine {
     private Activity activity;
 
     public ArrayList<Entity> entities;
+    public GameResources resouces;
 
     private boolean runningEngine;
 
@@ -34,12 +37,14 @@ public class GameEngine {
         this.activity = activity;
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        surface.setEGLContextClientVersion(2);
+        surface.setEGLContextClientVersion(1);
         openGLRenderer = new OpenGLRenderer(this, gameUpdates);
         surface.setRenderer(openGLRenderer);
 
         hideSystemUI();
         entities = new ArrayList<>();
+        this.resouces = resources;
+        resources.isLoaded();
     }
 
     public void pause() {
@@ -94,15 +99,18 @@ public class GameEngine {
     }
 
     /**
-     * Update engine, need to be called manually to game runs
      * It will update MOVEMENT, PHYSICS, COLLISIONS of all entities
      */
-    public void engneUpdate() {
+    public void engineUpdates() {
         for (Entity entity : entities) {
             for (Component component : entity.components) {
                 component.run(this);
             }
         }
+    }
+
+    public GL10 getOpenGL() {
+        return openGLRenderer.getGL();
     }
 
     public interface GameUpdates {

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="game.dival.fireflyghter" >
 
-    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <uses-feature android:glEsVersion="0x00010001" android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -13,7 +13,6 @@
         <activity android:name="game.dival.fireflyghter.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

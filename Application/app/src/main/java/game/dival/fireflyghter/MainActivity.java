@@ -3,13 +3,16 @@ package game.dival.fireflyghter;
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.Log;
+
+import java.io.IOException;
 
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.GameResources;
 import game.dival.fireflyghter.engine.entity.Entity;
-import game.dival.fireflyghter.engine.entity.components.Model3D;
 import game.dival.fireflyghter.engine.entity.components.Physics;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
+import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 import game.dival.fireflyghter.engine.math.Vector3D;
 
 
@@ -18,33 +21,42 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
     private GLSurfaceView glSurface;
     private GameEngine gameEngine;
     private Physics birdPhysics;
+    private Transformation transformation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         glSurface = (GLSurfaceView) findViewById(R.id.glSurface);
-        gameEngine = new GameEngine(this, glSurface, new GameResources(), this);
+
 
         /**
          * EXAMPLE OF BIRD ON DivaEngine
          */
 
-        Entity bird = new Entity("Bird"); // Create bird
-        bird.components.add(new Transformation(bird)); //add location, scale, rotation (all 0)
-        bird.components.add(new Physics(bird, new Vector3D(), 0.5f, true)); //add inertiaVector, weight, hasGravityAttraction
-        bird.components.add(new Model3D(bird)); //Not ready yet, but it will add 3d model
-        gameEngine.entities.add(bird);
+        GameResources resources = new GameResources();
+        try {
+            resources.addOBJ("tree", getAssets().open("pine.obj"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        gameEngine = new GameEngine(this, glSurface, resources, this);
 
-        birdPhysics = (Physics) bird.components.get(bird.getPhysics(2)); // Thats how you get a component, the int number is for performance, it can be ignore
-        birdPhysics.applyForce(new Vector3D(0, 0, -1)); //bird will go forward
-
+        Entity tree = new Entity("Tree"); // Create bird
+        transformation = new Transformation(tree);
+        transformation.location = new Vector3D(0,  0, -10f);
+        Model3D treeModel = new Model3D(tree,"tree",gameEngine);
+        tree.components.add(treeModel);
+        tree.components.add(transformation); //add location, scale, rotation
+        gameEngine.entities.add(tree);
     }
+
+    float variation;
 
     @Override
     public void gameFrame() {
-        birdPhysics.applyForce(new Vector3D(0, 0, -1)); //go foward each frame
+        Log.d("LOG",transformation.location.xyz[0]+" "+transformation.location.xyz[1]+transformation.location.xyz[2]);
+        transformation.location = new Vector3D(0,-0.001f,variation-=0.0001f);
     }
 
     @Override

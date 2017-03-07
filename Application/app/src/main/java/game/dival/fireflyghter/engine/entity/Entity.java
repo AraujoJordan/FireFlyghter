@@ -5,7 +5,7 @@ import java.util.List;
 
 import game.dival.fireflyghter.engine.entity.components.BoxCollision;
 import game.dival.fireflyghter.engine.entity.components.Component;
-import game.dival.fireflyghter.engine.entity.components.Model3D;
+import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 import game.dival.fireflyghter.engine.entity.components.Physics;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
 
@@ -40,7 +40,7 @@ public class Entity {
             transformation = (Transformation) components.get(oldIndex);
             return oldIndex;
         } catch (IndexOutOfBoundsException | ClassCastException exception) {
-            for (int newIndex = 0; newIndex <= components.size(); newIndex++) {
+            for (int newIndex = 0; newIndex < components.size(); newIndex++) {
                 if (components.get(newIndex) instanceof Transformation) {
                     return newIndex;
                 }
@@ -56,15 +56,15 @@ public class Entity {
      * @param oldIndex the last index with the Model3D, if -1, it will be crate a new one
      * @return if the oldIndex is the right one, it will be returned, if not, it will search on the list
      */
-    public int getGameModel(int oldIndex) {
+    public int getModel3D(int oldIndex) {
 
         Model3D model3D;
         try {
             model3D = (Model3D) components.get(oldIndex);
             return oldIndex;
         } catch (IndexOutOfBoundsException | ClassCastException exception) {
-            for (int newIndex = 0; newIndex <= components.size(); newIndex++) {
-                if (components.get(newIndex) instanceof Transformation) {
+            for (int newIndex = 0; newIndex < components.size(); newIndex++) {
+                if (components.get(newIndex) instanceof Model3D) {
                     return newIndex;
                 }
             }
@@ -86,7 +86,7 @@ public class Entity {
             model = (BoxCollision) components.get(oldIndex);
             return oldIndex;
         } catch (IndexOutOfBoundsException | ClassCastException exception) {
-            for (int newIndex = 0; newIndex <= components.size(); newIndex++) {
+            for (int newIndex = 0; newIndex < components.size(); newIndex++) {
                 if (components.get(newIndex) instanceof BoxCollision) {
                     return newIndex;
                 }
@@ -108,7 +108,7 @@ public class Entity {
             physics = (Physics) components.get(oldIndex);
             return oldIndex;
         } catch (IndexOutOfBoundsException | ClassCastException exception) {
-            for (int newIndex = 0; newIndex <= components.size(); newIndex++) {
+            for (int newIndex = 0; newIndex < components.size(); newIndex++) {
                 if (components.get(newIndex) instanceof Physics) {
                     return newIndex;
                 }

@@ -11,7 +11,7 @@ import game.dival.fireflyghter.engine.entity.Entity;
 public abstract class Component {
 
     ArrayList<Integer> indexCache = new ArrayList<>();
-    final Entity parentEntity;
+    final protected Entity parentEntity;
 
     public Component(Entity entity) {
         this.parentEntity = entity;
