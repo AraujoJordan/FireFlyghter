@@ -17,5 +17,5 @@ public abstract class Component {
         this.parentEntity = entity;
     }
 
-    public abstract void run(GameEngine engine);
+    public abstract void run(GameEngine engine, float[] mMVPMatrix);
 }

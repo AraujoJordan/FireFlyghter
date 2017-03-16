@@ -48,14 +48,12 @@ public class Physics extends Component {
     }
 
     @Override
-    public void run(GameEngine engine) {
+    public void run(GameEngine engine, float[] mMVPMatrix) {
         if (hasGravity)
             applyForce(GRAVITY_FORCE);
 
-        transIndex = parentEntity.getTransformation(transIndex);
-
-        Transformation transformation = (Transformation) parentEntity.components.get(transIndex);
-        transformation.location.add(inertiaVector);
+        Transformation transformation = parentEntity.getTransformation();
+        transformation.translation.add(inertiaVector);
 
     }
 }

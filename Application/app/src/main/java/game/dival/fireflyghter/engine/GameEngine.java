@@ -4,11 +4,10 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
-
-import javax.microedition.khronos.opengles.GL10;
 
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.entity.components.Component;
@@ -22,8 +21,8 @@ public class GameEngine {
     public final int SCREEN_WIDTH, SCREEN_HEIGHT;
 
     private GLSurfaceView surface;
-    private OpenGLRenderer openGLRenderer;
     private Activity activity;
+    private GameUpdates updates;
 
     public ArrayList<Entity> entities;
     public GameResources resouces;
@@ -35,11 +34,15 @@ public class GameEngine {
         SCREEN_HEIGHT = surfaceOfTheGame.getHeight();
         this.surface = surfaceOfTheGame;
         this.activity = activity;
+        this.updates = gameUpdates;
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        surface.setEGLContextClientVersion(1);
-        openGLRenderer = new OpenGLRenderer(this, gameUpdates);
+        surface.setEGLContextClientVersion(2);
+        GLESRenderer openGLRenderer = new GLESRenderer(this, gameUpdates);
         surface.setRenderer(openGLRenderer);
+        
+        //surface.setRenderer(openGLRenderer);
+//        surface.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
         hideSystemUI();
         entities = new ArrayList<>();
@@ -100,17 +103,16 @@ public class GameEngine {
 
     /**
      * It will update MOVEMENT, PHYSICS, COLLISIONS of all entities
+     * @param mMVPMatrix
      */
-    public void engineUpdates() {
+    public void engineUpdates(float[] mMVPMatrix) {
+//        Log.d(getClass().getSimpleName(),"engineUpdates()");
+        updates.gameFrame();
         for (Entity entity : entities) {
             for (Component component : entity.components) {
-                component.run(this);
+                component.run(this, mMVPMatrix);
             }
         }
-    }
-
-    public GL10 getOpenGL() {
-        return openGLRenderer.getGL();
     }
 
     public interface GameUpdates {

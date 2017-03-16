@@ -1,5 +1,6 @@
 package game.dival.fireflyghter.engine;
 
+import android.app.Activity;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -11,6 +12,7 @@ import java.util.Hashtable;
 
 import game.dival.fireflyghter.engine.draw.Color;
 import game.dival.fireflyghter.engine.draw.Pixel;
+import game.dival.fireflyghter.engine.math.Vector3D;
 
 /**
  * Created by arauj on 24/02/2017.
@@ -28,10 +30,14 @@ public class GameResources {
 
     }
 
-    public void addOBJ(String idLabel, InputStream inputStream) throws IOException {
+    public void addOBJ(Activity act,String idLabel, String fileName) {
         if (isLoaded)
             throw new RuntimeException("Can't create a 3d object now, create before");
-        object3dList.put(idLabel, new Object3D(inputStream));
+        try {
+            object3dList.put(idLabel, new Object3D(act.getAssets().open(fileName)));
+        } catch (IOException error) {
+            throw new RuntimeException("Can't create a 3d object, file exists? \n"+error.getMessage());
+        }
     }
 
     public Object3D get3DModel(String idLabel) {
@@ -43,6 +49,7 @@ public class GameResources {
     }
 
     public class Object3D {
+        public final Vector3D center;
         public ArrayList<Pixel[]> faces;
         private float width, height, depth;
 
@@ -54,6 +61,12 @@ public class GameResources {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
             String line;
             int lineNo = 0;
+            int vertexNumber = 1;
+
+            float minWidth = 0, maxWidth = 0;
+            float minHeight = 0, maxHeight = 0;
+            float minDepth = 0, maxDepth = 0;
+
             while ((line = reader.readLine()) != null) {
                 lineNo++;
                 line = line.trim();
@@ -84,13 +97,59 @@ public class GameResources {
 
                 // if vertex
                 if ("v".equals(keyword)) {
-                    Pixel vertex = new Pixel(
-                            Float.valueOf(tokens[1]),
-                            Float.valueOf(tokens[2]),
-                            Float.valueOf(tokens[3]),
-                            new Color(255, 0, 0, 255));
-                    Log.d("Pixel"," x:"+tokens[1]+" y:"+tokens[2]+" z:"+tokens[3]);
+                    Color color = new Color();
+                    switch (vertexNumber) {
+                        case 1:
+                            color = new Color(255, 0, 0, 255);
+                            break;
+                        case 2:
+                            color = new Color(0, 255, 0, 255);
+                            break;
+                        case 3:
+                            color = new Color(0, 0, 255, 255);
+                            break;
+                        case 4:
+                            color = new Color(255, 255, 0, 255);
+                            break;
+                        case 5:
+                            color = new Color(0, 255, 255, 255);
+                            break;
+                        case 6:
+                            color = new Color(255, 0, 255, 255);
+                            break;
+                        case 7:
+                            color = new Color(128, 255, 128, 255);
+                            break;
+                        case 8:
+                            color = new Color(255, 128, 128, 255);
+                    }
+                    float x = Float.valueOf(tokens[1]);
+                    float y = Float.valueOf(tokens[2]);
+                    float z = Float.valueOf(tokens[3]);
+                    Pixel vertex = new Pixel(x, y, z, color);
+
+                    if (vertexNumber == 1) {
+                        minWidth = maxWidth = x;
+                        minHeight = maxHeight = y;
+                        minDepth = maxDepth = z;
+                    } else {
+                        if(x < minWidth)
+                            minWidth = x;
+                        if(x > maxWidth)
+                            maxWidth = x;
+                        if(y < minHeight)
+                            minHeight = y;
+                        if(y > maxHeight)
+                            maxHeight = y;
+                        if(z < minDepth)
+                            minDepth = z;
+                        if(z > maxDepth)
+                            maxDepth = z;
+                    }
+
+                    Log.d("Pixel " + vertexNumber++, " x:" + tokens[1] + " y:" + tokens[2] + " z:" + tokens[3]);
                     vertexs.add(vertex);
+
                 }
 
                 // if face
@@ -102,18 +161,25 @@ public class GameResources {
 
                     // Each token corresponds to 1 vertex entry and possibly one texture entry and normal entry.
                     Pixel[] face = new Pixel[3];
-                    int faceIndex = 0;
-                    Log.d("Face", " ");
-                    for (int i = 1; i < tokens.length; i++) {
-                        String[] fValues = tokens[i].split("//");
-                        int vertexIndex = Integer.valueOf(fValues[0]);
-                        face[faceIndex] = vertexs.get(vertexIndex);
-                        Log.d("Pixel"+i, " x:" + face[faceIndex].xyz[0] + " y:" + face[faceIndex].xyz[1] + " z:" + face[faceIndex].xyz[2]);
-                        faceIndex++;
+
+                    Log.d("Face", line);
+
+
+                    for (int i = 0; i < face.length; i++) {
+                        String[] faceValues = tokens[i + 1].split("//");
+                        int vertexIndex = Integer.parseInt(faceValues[0]);
+                        face[i] = vertexs.get(vertexIndex - 1); //the list begin with 0, different from the obj index
+                        Log.d("Pixel " + vertexIndex, " x:" + face[i].xyz[0] + " y:" + face[i].xyz[1] + " z:" + face[i].xyz[2]);
                     }
                     faces.add(face);
                 }
             }
+            width = maxWidth - minWidth;
+            height = maxHeight - minHeight;
+            depth = maxDepth - minDepth;
+
+            center = new Vector3D((maxWidth-minWidth)/2,(maxHeight-minHeight)/2,(maxDepth-minDepth)/2);
+
         }
 
         public float getWidth() {

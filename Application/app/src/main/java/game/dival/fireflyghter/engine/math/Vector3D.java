@@ -16,6 +16,12 @@ public class Vector3D {
     public Vector3D() {
     } //init xyz with 0 value
 
+    public Vector3D(Vector3D vector3D) {
+        for (int i = 0; i < vector3D.length(); i++) {
+            xyz[i] = vector3D.xyz[i];
+        }
+    }
+
     /**
      * Get the size of the vector (for colision or other calculations)
      *
@@ -23,6 +29,12 @@ public class Vector3D {
      */
     public float length() {
         return (float) Math.sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1] + xyz[2] * xyz[2]);
+    }
+
+    public static double distance(Vector3D vector3D, Vector3D vector3D2) {
+        return Math.sqrt(Math.pow(vector3D.xyz[0]-vector3D2.xyz[0],2) +
+                        Math.pow(vector3D.xyz[1]-vector3D2.xyz[1],2)+
+                        Math.pow(vector3D.xyz[2]-vector3D2.xyz[2],2));
     }
 
     /**

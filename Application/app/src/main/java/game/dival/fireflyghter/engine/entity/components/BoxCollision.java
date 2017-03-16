@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.entity.Entity;
-import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 import game.dival.fireflyghter.engine.math.Vector3D;
 
 /**
@@ -52,7 +51,7 @@ public class BoxCollision extends Collision {
 //        }
 //
 //        Transformation transformation = (Transformation) parentEntity.components.get(transPropIndex);
-//        Vector3D location = transformation.location;
+//        Vector3D translation = transformation.translation;
 //
 //        if (fixedWidth == -1 || fixedHeight == -1 || fixedDepth == -1) { //init box size
 //            Model3D model3D = (Model3D) parentEntity.components.get(modelPropIndex);
@@ -67,17 +66,17 @@ public class BoxCollision extends Collision {
 //                edges[i] = new Vector3D();
 //
 //        //update edges
-//        edges[0].xyz = new float[]{location.xyz[0], location.xyz[1] + fixedHeight / 2, location.xyz[2]};//UP
-//        edges[1].xyz = new float[]{location.xyz[0], location.xyz[1] - fixedHeight / 2, location.xyz[2]};//DOWN
-//        edges[2].xyz = new float[]{location.xyz[0] + fixedHeight / 2, location.xyz[1], location.xyz[2]};//LEFT
-//        edges[3].xyz = new float[]{location.xyz[0] - fixedHeight / 2, location.xyz[1], location.xyz[2]};//RIGHT
-//        edges[4].xyz = new float[]{location.xyz[0], location.xyz[1], location.xyz[2] + fixedHeight / 2};//FRONT
-//        edges[5].xyz = new float[]{location.xyz[0], location.xyz[1], location.xyz[2] - fixedHeight / 2};//BACK
+//        edges[0].xyz = new float[]{translation.xyz[0], translation.xyz[1] + fixedHeight / 2, translation.xyz[2]};//UP
+//        edges[1].xyz = new float[]{translation.xyz[0], translation.xyz[1] - fixedHeight / 2, translation.xyz[2]};//DOWN
+//        edges[2].xyz = new float[]{translation.xyz[0] + fixedHeight / 2, translation.xyz[1], translation.xyz[2]};//LEFT
+//        edges[3].xyz = new float[]{translation.xyz[0] - fixedHeight / 2, translation.xyz[1], translation.xyz[2]};//RIGHT
+//        edges[4].xyz = new float[]{translation.xyz[0], translation.xyz[1], translation.xyz[2] + fixedHeight / 2};//FRONT
+//        edges[5].xyz = new float[]{translation.xyz[0], translation.xyz[1], translation.xyz[2] - fixedHeight / 2};//BACK
 //
 //    }
 
     @Override
-    public void run(GameEngine engine) {
+    public void run(GameEngine engine, float[] mMVPMatrix) {
 //        if (!hasFixedPosition)
 //            updateBoxPosition();
 //        checkForCollision();
@@ -108,8 +107,7 @@ public class BoxCollision extends Collision {
             for (Entity entityToCollide : entities) {
                 if (isCancelled()) break;
 
-                int otherIndex = entityToCollide.getBoxCollision(0); //get the other boxCollider index
-                BoxCollision otherBox = (BoxCollision) entityToCollide.components.get(otherIndex);
+                BoxCollision otherBox = entityToCollide.getBoxCollision();
 
                 if (!(edges[2].xyz[0] > otherBox.edges[3].xyz[0] || // THIS LEFT EDGE > OTHER RIGHT EDGE
                         edges[3].xyz[0] < otherBox.edges[2].xyz[0]) || // THIS RIGHT EDGE < OTHER LEFT EDGE

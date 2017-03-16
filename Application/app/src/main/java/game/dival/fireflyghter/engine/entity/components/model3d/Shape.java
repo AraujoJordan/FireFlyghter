@@ -19,7 +19,7 @@ public class Shape {
     public Shape() {
     }
 
-    public void draw(GameEngine engine, Entity parentEntity) {
+    public void draw(GameEngine engine, Entity parentEntity, float[] mMVPMatrix) {
 
     }
 }
