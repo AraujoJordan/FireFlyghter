@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.GameResources;
+import game.dival.fireflyghter.engine.entity.Camera;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
 import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
@@ -31,6 +32,8 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
         resources.addOBJ(this, "pine", "pine.obj");
 
         gameEngine = new GameEngine(this, glSurface, resources, this);
+        Camera camera = new Camera(gameEngine);
+        gameEngine.addCamera(camera);
 
         Entity pine = new Entity("pine"); // Create PINE
         transformation1 = new Transformation(pine);
@@ -42,6 +45,8 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
         pine.components.add(new Model3D(pine, "pine", gameEngine));
         pine.components.add(transformation1); //add translation, scale, rotation
         gameEngine.entities.add(pine);
+
+        gameEngine.getCamera().getTransformation().translation.xyz[2] = -7;
     }
 
     float variation = 1f;

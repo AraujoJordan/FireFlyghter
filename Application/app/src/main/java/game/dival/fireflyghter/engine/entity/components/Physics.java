@@ -25,7 +25,6 @@ public class Physics extends Component {
         setWeight(weight);
         this.hasGravity = hasGravity;
 
-        indexCache.add(-1); //transformationCache
     }
 
     public float getWeight() {

@@ -5,9 +5,12 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import java.util.Arrays;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import game.dival.fireflyghter.engine.entity.Camera;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.entity.components.Component;
 import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
@@ -53,13 +56,18 @@ public class GLESRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 unused) {
 //        Log.d(getClass().getSimpleName(),"onDrawFrame()");
 
-
-
         // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
+
+        Camera cam = engine.getCamera();
+        float[] lookAtMatrix = cam.getLookAtMatrix();
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -7, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(mViewMatrix, 0,
+                lookAtMatrix[0],lookAtMatrix[1],lookAtMatrix[2],
+                lookAtMatrix[3],lookAtMatrix[4],lookAtMatrix[5],
+                lookAtMatrix[6],lookAtMatrix[7],lookAtMatrix[8]);
+//        Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -7, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);

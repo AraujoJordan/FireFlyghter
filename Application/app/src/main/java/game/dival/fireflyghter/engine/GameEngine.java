@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
 
+import game.dival.fireflyghter.engine.entity.Camera;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.entity.components.Component;
 
@@ -24,6 +24,7 @@ public class GameEngine {
     private Activity activity;
     private GameUpdates updates;
 
+    private Camera camera;
     public ArrayList<Entity> entities;
     public GameResources resouces;
 
@@ -40,14 +41,15 @@ public class GameEngine {
         surface.setEGLContextClientVersion(2);
         GLESRenderer openGLRenderer = new GLESRenderer(this, gameUpdates);
         surface.setRenderer(openGLRenderer);
-        
-        //surface.setRenderer(openGLRenderer);
-//        surface.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
         hideSystemUI();
         entities = new ArrayList<>();
         this.resouces = resources;
         resources.isLoaded();
+    }
+
+    public Camera getCamera() {
+        return camera;
     }
 
     public void pause() {
@@ -106,13 +108,16 @@ public class GameEngine {
      * @param mMVPMatrix
      */
     public void engineUpdates(float[] mMVPMatrix) {
-//        Log.d(getClass().getSimpleName(),"engineUpdates()");
         updates.gameFrame();
         for (Entity entity : entities) {
             for (Component component : entity.components) {
                 component.run(this, mMVPMatrix);
             }
         }
+    }
+
+    public void addCamera(Camera camera) {
+        this.camera = camera;
     }
 
     public interface GameUpdates {
