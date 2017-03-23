@@ -14,12 +14,24 @@ public class Vector3D {
     }
 
     public Vector3D() {
+        xyz[0] = 0;
+        xyz[1] = 0;
+        xyz[2] = 0;
     } //init xyz with 0 value
 
+    /**
+     * Clone the vector
+     *
+     * @param vector3D the vector to be clone
+     */
     public Vector3D(Vector3D vector3D) {
-        for (int i = 0; i < vector3D.length(); i++) {
-            xyz[i] = vector3D.xyz[i];
-        }
+        System.arraycopy(vector3D.xyz, 0, xyz, 0, vector3D.xyz.length);
+    }
+
+    public static double distance(Vector3D vector3D, Vector3D vector3D2) {
+        return Math.sqrt(Math.pow(vector3D.xyz[0] - vector3D2.xyz[0], 2) +
+                Math.pow(vector3D.xyz[1] - vector3D2.xyz[1], 2) +
+                Math.pow(vector3D.xyz[2] - vector3D2.xyz[2], 2));
     }
 
     /**
@@ -29,12 +41,6 @@ public class Vector3D {
      */
     public float length() {
         return (float) Math.sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1] + xyz[2] * xyz[2]);
-    }
-
-    public static double distance(Vector3D vector3D, Vector3D vector3D2) {
-        return Math.sqrt(Math.pow(vector3D.xyz[0]-vector3D2.xyz[0],2) +
-                        Math.pow(vector3D.xyz[1]-vector3D2.xyz[1],2)+
-                        Math.pow(vector3D.xyz[2]-vector3D2.xyz[2],2));
     }
 
     /**
@@ -69,6 +75,30 @@ public class Vector3D {
         xyz[0] *= scalar;
         xyz[1] *= scalar;
         xyz[2] *= scalar;
+    }
+
+    public float getX() {
+        return xyz[0];
+    }
+
+    public void setX(float x) {
+        xyz[0] = x;
+    }
+
+    public float getY() {
+        return xyz[1];
+    }
+
+    public void setY(float y) {
+        xyz[1] = y;
+    }
+
+    public float getZ() {
+        return xyz[2];
+    }
+
+    public void setZ(float z) {
+        xyz[2] = z;
     }
 
 }

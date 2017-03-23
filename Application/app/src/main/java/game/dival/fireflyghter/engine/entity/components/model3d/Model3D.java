@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.GameResources;
-import game.dival.fireflyghter.engine.draw.Pixel;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.entity.components.Component;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
@@ -23,8 +22,8 @@ public class Model3D extends Component {
     private final float width, height, depth;
     private final Vector3D centerOfModel;
 
-    private ArrayList<Triangle> shapes;
-    private ArrayList<Pixel[]> tempTriangles;
+    private ArrayList<Draw> shapes;
+    private ArrayList<Vector3D[]> tempTriangles;
 
     public Model3D(Entity entity, String resourceLabel, GameEngine engine) {
         super(entity);
@@ -32,7 +31,7 @@ public class Model3D extends Component {
         GameResources.Object3D obj3D = engine.resouces.get3DModel(resourceLabel);
 
         tempTriangles = new ArrayList<>();
-        for (Pixel[] triplePixel : obj3D.faces)
+        for (Vector3D[] triplePixel : obj3D.faces)
             tempTriangles.add(Arrays.copyOf(triplePixel, triplePixel.length));
         this.width = obj3D.getWidth();
         this.height = obj3D.getHeight();
@@ -50,22 +49,22 @@ public class Model3D extends Component {
         Transformation transformation;
         try {
             transformation = parentEntity.getTransformation();
-//            Log.d(getClass().getSimpleName(), Arrays.toString(transformation.transformationMatrix));
-            for (Triangle triangle : shapes)
-                triangle.run(transformation.transformationMatrix);
+            for (Draw triangleDraw : shapes)
+                triangleDraw.run(transformation.transformationMatrix);
             return;
-        } catch (NullPointerException ignored) {
-            Log.e("NullPointerException",ignored.getMessage());
+        } catch (NullPointerException noTrans) {
+            Log.e("NullPointerException", noTrans.getMessage());
         }
 
         //RUN WITHOUT TRANSFORMATION
-        for (Triangle triangle : shapes) {
-            triangle.run(mMVPMatrix);
+        for (Draw triangleDraw : shapes) {
+            triangleDraw.run(mMVPMatrix);
         }
     }
 
+
     /**
-     * Can't init the model triangles in the model3d constructor,
+     * Can't init the model draw in the model3d constructor,
      * otherwise the OpenGL will doesn't see more than 1 triangle.
      * PS: Need to discover why
      */
@@ -74,8 +73,17 @@ public class Model3D extends Component {
             return;
 
         shapes = new ArrayList<>();
-        for (Pixel[] triplePixel : tempTriangles)
-            shapes.add(new Triangle(triplePixel[0], triplePixel[1], triplePixel[2]));
+        ArrayList<Vector3D> vert = new ArrayList<>();
+
+        for (Vector3D[] triplePixel : tempTriangles) {
+            vert.add(triplePixel[0]);
+            vert.add(triplePixel[1]);
+            vert.add(triplePixel[2]);
+        }
+        shapes.add(new ModelDraw(vert));
+
+        vert.clear();
+        vert = null;
         tempTriangles.clear();
         tempTriangles = null;
     }

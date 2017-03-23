@@ -93,7 +93,7 @@ public class BoxCollision extends Collision {
         int index = 0;
         for (int coreIndex = 0; coreIndex < processorCores; coreIndex++) {
             Entity[] list = new Entity[entitiesByCore];
-            for (int entIndex = (coreIndex == processorCores-1 ? entitiesByCore + entitiesRest : entitiesByCore);
+            for (int entIndex = (coreIndex == processorCores - 1 ? entitiesByCore + entitiesRest : entitiesByCore);
                  entIndex > 0; entIndex++) {
                 list[entIndex] = entitiesToCollide.get(index);
             }
@@ -115,7 +115,7 @@ public class BoxCollision extends Collision {
                         edges[1].xyz[1] > otherBox.edges[0].xyz[1] || // THIS BOTTOM EDGE < OTHER TOP EDGE
                         edges[4].xyz[2] > otherBox.edges[5].xyz[2] || // THIS FRONT EDGE > OTHER BACK EDGE
                         edges[5].xyz[2] < otherBox.edges[4].xyz[2]) { // THIS BACK EDGE < OTHER FRONT EDGE
-                //OBS, THIS IS IN CARTESIAN, TO INVERT THE Y, CONSULT THIS LINK http://gamedev.stackexchange.com/a/913
+                    //OBS, THIS IS IN CARTESIAN, TO INVERT THE Y, CONSULT THIS LINK http://gamedev.stackexchange.com/a/913
                     publishProgress(entityToCollide);
                 }
             }

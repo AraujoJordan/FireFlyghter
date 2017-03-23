@@ -11,11 +11,10 @@ import game.dival.fireflyghter.engine.math.Vector3D;
 
 abstract class Collision extends Component {
 
-    Vector3D[] edges;
-
     //Entities list to check collision (do not add all for the god sake)
     protected ArrayList<Entity> entitiesToCollide;
     protected CollisionListener trigger;
+    Vector3D[] edges;
 
     public Collision(Entity parentEntity) {
         super(parentEntity);
@@ -26,9 +25,11 @@ abstract class Collision extends Component {
         entitiesToCollide.add(entity);
         this.trigger = trigger;
     }
+
     public void removerCollisionListener(Entity entity) {
         entitiesToCollide.remove(entity);
     }
+
     public void clearCollidesListener() {
         entitiesToCollide.clear();
     }

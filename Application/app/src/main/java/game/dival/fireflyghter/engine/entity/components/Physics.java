@@ -12,12 +12,10 @@ import game.dival.fireflyghter.engine.math.Vector3D;
 public class Physics extends Component {
 
     final static Vector3D GRAVITY_FORCE = new Vector3D(0, 9.8f, 0);
-    private int transIndex = -1; //do not change, it will be use for optimization
-
     boolean hasGravity;
-    private float weight;
-
     Vector3D inertiaVector;
+    private int transIndex = -1; //do not change, it will be use for optimization
+    private float weight;
 
     public Physics(Entity parentEntity, Vector3D inertiaVector, float weight, boolean hasGravity) {
         super(parentEntity);
@@ -52,7 +50,7 @@ public class Physics extends Component {
             applyForce(GRAVITY_FORCE);
 
         Transformation transformation = parentEntity.getTransformation();
-        transformation.translation.add(inertiaVector);
+        transformation.getTranslation().add(inertiaVector);
 
     }
 }

@@ -5,9 +5,9 @@ import java.util.List;
 
 import game.dival.fireflyghter.engine.entity.components.BoxCollision;
 import game.dival.fireflyghter.engine.entity.components.Component;
-import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 import game.dival.fireflyghter.engine.entity.components.Physics;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
+import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 
 /**
  * Created by arauj on 05/03/2017.
@@ -34,10 +34,10 @@ public class Entity {
     }
 
     public Transformation getTransformation() {
-        if(transformation != null)
+        if (transformation != null)
             return transformation;
         for (Component component : components) {
-            if(component instanceof Transformation) {
+            if (component instanceof Transformation) {
                 transformation = (Transformation) component;
                 return transformation;
             }
@@ -46,10 +46,10 @@ public class Entity {
     }
 
     public Model3D getModel3D() {
-        if(model3D != null)
+        if (model3D != null)
             return model3D;
         for (Component component : components) {
-            if(component instanceof Model3D) {
+            if (component instanceof Model3D) {
                 model3D = (Model3D) component;
                 return model3D;
             }
@@ -58,10 +58,10 @@ public class Entity {
     }
 
     public BoxCollision getBoxCollision() {
-        if(boxCollision != null)
+        if (boxCollision != null)
             return boxCollision;
         for (Component component : components) {
-            if(component instanceof BoxCollision) {
+            if (component instanceof BoxCollision) {
                 boxCollision = (BoxCollision) component;
                 return boxCollision;
             }
@@ -70,10 +70,10 @@ public class Entity {
     }
 
     public Physics getPhysics() {
-        if(physics != null)
+        if (physics != null)
             return physics;
         for (Component component : components) {
-            if(component instanceof Physics) {
+            if (component instanceof Physics) {
                 physics = (Physics) component;
                 return physics;
             }
@@ -83,6 +83,7 @@ public class Entity {
 
     /**
      * Remove the component from optimization variables (references) and from the list
+     *
      * @param removeMe the variable that you want to be removed
      */
     public void removeComponent(Component removeMe) {

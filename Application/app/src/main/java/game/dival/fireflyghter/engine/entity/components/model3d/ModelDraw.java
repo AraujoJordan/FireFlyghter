@@ -5,21 +5,22 @@ import android.opengl.GLES20;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import game.dival.fireflyghter.engine.GLESRenderer;
-import game.dival.fireflyghter.engine.draw.Pixel;
+import game.dival.fireflyghter.engine.math.Vector3D;
 
 /**
- * Created by arauj on 06/03/2017.
+ * Created by arauj on 23/03/2017.
  */
 
-public class Triangle extends Shape {
+public class ModelDraw implements Draw {
 
     private final String vertexShaderCode =
-                    // This matrix member variable provides a hook to manipulate
-                    // the coordinates of the objects that use this vertex shader
-                    "uniform mat4 uMVPMatrix;" +
+            // This matrix member variable provides a hook to manipulate
+            // the coordinates of the objects that use this vertex shader
+            "uniform mat4 uMVPMatrix;" +
                     "attribute vec4 vPosition;" +
                     "void main() {" +
                     // the matrix must be included as a modifier of gl_Position
@@ -29,41 +30,44 @@ public class Triangle extends Shape {
                     "}";
 
     private final String fragmentShaderCode =
-                    "precision mediump float;" +
+            "precision mediump float;" +
                     "uniform vec4 vColor;" +
                     "void main() {" +
                     "  gl_FragColor = vColor;" +
                     "}";
 
+
+    private static final int COORDS_PER_VERTEX = 3; // number of coordinates per vertex in this array
     private final FloatBuffer vertexBuffer;
     private final int mProgram;
+    private final float triangleCoords[];
+    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+    float color[] = {0.5f, 0.5f, 0.5f, 1.0f};
     private int mPositionHandle;
     private int mColorHandle;
     private int mMVPMatrixHandle;
-
-    // number of coordinates per vertex in this array
-    static final int COORDS_PER_VERTEX = 3;
-    static float triangleCoords[] = {
-            // in counterclockwise order:
-            0.0f, 0.622008459f, 0.0f,   // top
-            -0.5f, -0.311004243f, 0.0f,   // bottom left
-            0.5f, -0.311004243f, 0.0f    // bottom right
-    };
-    private final int vertexCount = triangleCoords.length / COORDS_PER_VERTEX;
-    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
-
-    float color[] = {0.5f, 0.5f, 0.5f, 1.0f};
+    private int vertexCount;
 
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
+     *
+     * @param pixels
      */
-    public Triangle(Pixel pixel1, Pixel pixel2, Pixel pixel3) {
+    public ModelDraw(ArrayList<Vector3D> pixels) {
 
-        triangleCoords = new float[]{
-                pixel1.xyz[0], pixel1.xyz[1], pixel1.xyz[2],
-                pixel2.xyz[0], pixel2.xyz[1], pixel2.xyz[2],
-                pixel3.xyz[0], pixel3.xyz[1], pixel3.xyz[2]
-        };
+        triangleCoords = new float[pixels.size() * 3];
+
+        int index = 0;
+        for (Vector3D vert : pixels) {
+            triangleCoords[index] = vert.xyz[0];
+            index++;
+            triangleCoords[index] = vert.xyz[1];
+            index++;
+            triangleCoords[index] = vert.xyz[2];
+            index++;
+        }
+
+        vertexCount = triangleCoords.length / COORDS_PER_VERTEX;
 
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
@@ -133,5 +137,4 @@ public class Triangle extends Shape {
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
     }
-
 }

@@ -1,7 +1,5 @@
 package game.dival.fireflyghter.engine.entity.components;
 
-import java.util.ArrayList;
-
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.entity.Entity;
 

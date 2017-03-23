@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import game.dival.fireflyghter.engine.draw.Color;
 import game.dival.fireflyghter.engine.draw.Pixel;
 import game.dival.fireflyghter.engine.math.Vector3D;
 
@@ -30,13 +29,13 @@ public class GameResources {
 
     }
 
-    public void addOBJ(Activity act,String idLabel, String fileName) {
+    public void addOBJ(Activity act, String idLabel, String fileName) {
         if (isLoaded)
             throw new RuntimeException("Can't create a 3d object now, create before");
         try {
             object3dList.put(idLabel, new Object3D(act.getAssets().open(fileName)));
         } catch (IOException error) {
-            throw new RuntimeException("Can't create a 3d object, file exists? \n"+error.getMessage());
+            throw new RuntimeException("Can't create a 3d object, file exists? \n" + error.getMessage());
         }
     }
 
@@ -50,13 +49,18 @@ public class GameResources {
 
     public class Object3D {
         public final Vector3D center;
-        public ArrayList<Pixel[]> faces;
+
+        public ArrayList<Vector3D> vertexs;
+        public ArrayList<Vector3D[]> faces;
+        public ArrayList<Vector3D> vnormals;
+
         private float width, height, depth;
 
         public Object3D(InputStream inputStream) throws IOException {
 
-            ArrayList<Pixel> vertexs = new ArrayList<>();
+            vertexs = new ArrayList<>();
             faces = new ArrayList<>();
+            vnormals = new ArrayList<>();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
             String line;
@@ -97,59 +101,43 @@ public class GameResources {
 
                 // if vertex
                 if ("v".equals(keyword)) {
-                    Color color = new Color();
-                    switch (vertexNumber) {
-                        case 1:
-                            color = new Color(255, 0, 0, 255);
-                            break;
-                        case 2:
-                            color = new Color(0, 255, 0, 255);
-                            break;
-                        case 3:
-                            color = new Color(0, 0, 255, 255);
-                            break;
-                        case 4:
-                            color = new Color(255, 255, 0, 255);
-                            break;
-                        case 5:
-                            color = new Color(0, 255, 255, 255);
-                            break;
-                        case 6:
-                            color = new Color(255, 0, 255, 255);
-                            break;
-                        case 7:
-                            color = new Color(128, 255, 128, 255);
-                            break;
-                        case 8:
-                            color = new Color(255, 128, 128, 255);
-                    }
+
                     float x = Float.valueOf(tokens[1]);
                     float y = Float.valueOf(tokens[2]);
                     float z = Float.valueOf(tokens[3]);
-                    Pixel vertex = new Pixel(x, y, z, color);
+                    Pixel vertex = new Pixel(x, y, z);
 
                     if (vertexNumber == 1) {
                         minWidth = maxWidth = x;
                         minHeight = maxHeight = y;
                         minDepth = maxDepth = z;
                     } else {
-                        if(x < minWidth)
+                        if (x < minWidth)
                             minWidth = x;
-                        if(x > maxWidth)
+                        if (x > maxWidth)
                             maxWidth = x;
-                        if(y < minHeight)
+                        if (y < minHeight)
                             minHeight = y;
-                        if(y > maxHeight)
+                        if (y > maxHeight)
                             maxHeight = y;
-                        if(z < minDepth)
+                        if (z < minDepth)
                             minDepth = z;
-                        if(z > maxDepth)
+                        if (z > maxDepth)
                             maxDepth = z;
                     }
 
                     Log.d("Pixel " + vertexNumber++, " x:" + tokens[1] + " y:" + tokens[2] + " z:" + tokens[3]);
                     vertexs.add(vertex);
 
+                }
+
+                // if normal vector
+                else if ("vn".equals(keyword)) {
+                    Vector3D normal = new Vector3D(
+                            Float.valueOf(tokens[1]),
+                            Float.valueOf(tokens[2]),
+                            Float.valueOf(tokens[3]));
+                    vnormals.add(normal);
                 }
 
                 // if face
@@ -160,7 +148,7 @@ public class GameResources {
                     }
 
                     // Each token corresponds to 1 vertex entry and possibly one texture entry and normal entry.
-                    Pixel[] face = new Pixel[3];
+                    Vector3D[] face = new Pixel[3];
 
                     Log.d("Face", line);
 
@@ -178,7 +166,7 @@ public class GameResources {
             height = maxHeight - minHeight;
             depth = maxDepth - minDepth;
 
-            center = new Vector3D((maxWidth-minWidth)/2,(maxHeight-minHeight)/2,(maxDepth-minDepth)/2);
+            center = new Vector3D((maxWidth - minWidth) / 2, (maxHeight - minHeight) / 2, (maxDepth - minDepth) / 2);
 
         }
 
