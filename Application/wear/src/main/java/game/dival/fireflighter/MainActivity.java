@@ -1,9 +1,8 @@
-package game.dival.fireflyghter;
+package game.dival.fireflighter;
 
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.util.Log;
 
 import game.dival.divaengine.engine.GameEngine;
 import game.dival.divaengine.engine.GameResources;
@@ -13,7 +12,6 @@ import game.dival.divaengine.engine.entity.components.Physics;
 import game.dival.divaengine.engine.entity.components.Transformation;
 import game.dival.divaengine.engine.entity.components.model3d.Model3D;
 import game.dival.divaengine.engine.math.Vector3D;
-import game.dival.divaengine.engine.GameController.SensorController;
 
 
 public class MainActivity extends Activity implements GameEngine.GameUpdates {
@@ -21,7 +19,7 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
     float value = 0f;
     float variation = 0.05f;
     private GameEngine gameEngine;
-    private SensorController sensorController;
+    //    private SensorController sensorController;
     private Transformation cubeTrans;
     private Physics cubePhysics;
 
@@ -41,19 +39,16 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
         gameEngine.addCamera(camera);
 
         Entity cube = new Entity("cube");
-        cubePhysics = new Physics(cube, new Vector3D(0,0.005f,0), 1f, false);
+//        cubePhysics = new Physics(cube, new Vector3D(0,0.015f,0), 0.1f, false);
         cubeTrans = new Transformation(cube);
         cube.addComponent(cubeTrans);
         cube.addComponent(new Model3D(cube, "cube", gameEngine));
-        cube.addComponent(cubePhysics);
+//        cube.addComponent(cubePhysics);
         gameEngine.entities.add(cube);
 
-        sensorController = new SensorController(this,gameEngine);
+//        sensorController = new SensorController(this,gameEngine);
 
         addPines(50);
-
-        camera.followEntity(cube);
-        camera.setSensor(sensorController);
 
 //        FireParticles fireParticles = new FireParticles(gameEngine);
 //        fireParticles.addComponent(new Transformation(fireParticles));
@@ -75,7 +70,7 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
         for (int i = 0; i <= numerOfPines; i++) {
             Entity pine = new Entity("pine" + i); // Create PINE
             Transformation transformation = new Transformation(pine);
-            transformation.setTranslation(new Vector3D((float) randDouble(-25, 25), 0, (float) randDouble(-25, 25)));
+            transformation.setTranslation(new Vector3D((float) randDouble(-50, 50), 0, (float) randDouble(-50, 50)));
             pine.addComponent(new Model3D(pine, "pine", gameEngine));
             pine.addComponent(transformation); //add translation, scale, rotation
             gameEngine.entities.add(pine);
@@ -95,7 +90,12 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
                         cubeTrans.getTranslation().getZ())
         );
 
-
+        cubeTrans.setTranslation(
+                new Vector3D(
+                        cubeTrans.getTranslation().getX(),
+                        cubeTrans.getTranslation().getY() + value / 200,
+                        cubeTrans.getTranslation().getZ())
+        );
         cameraTrans.setTranslation(
                 new Vector3D(
                         -value,
@@ -107,7 +107,7 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
     @Override
     protected void onPause() {
         gameEngine.pause();
-        sensorController.pause();
+//        sensorController.pause();
         super.onPause();
     }
 
@@ -115,7 +115,7 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
     protected void onResume() {
         super.onResume();
         gameEngine.play();
-        sensorController.start();
+//        sensorController.start();
     }
 
     @Override
