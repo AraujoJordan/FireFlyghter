@@ -26,6 +26,8 @@ public class Model3D extends Component {
     private ArrayList<ModelDraw> shapes;
     private ArrayList<Vector3D[]> tempTriangles;
 
+    private GameEngine engine;
+
     public Model3D(Entity entity, String resourceLabel, GameEngine engine) {
         super(entity);
 
@@ -38,6 +40,7 @@ public class Model3D extends Component {
         this.height = obj3D.getHeight();
         this.depth = obj3D.getDepth();
         this.centerOfModel = obj3D.center;
+        this.engine = engine;
     }
 
     /**
@@ -99,7 +102,7 @@ public class Model3D extends Component {
             vert.add(triplePixel[1]);
             vert.add(triplePixel[2]);
         }
-        shapes.add(new ModelDraw(vert));
+        shapes.add(new ModelDraw(vert,engine));
 
         vert.clear();
         vert = null;

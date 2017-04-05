@@ -3,8 +3,8 @@ package game.dival.fireflyghter;
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.util.Log;
 
+import game.dival.divaengine.engine.GameController.SensorController;
 import game.dival.divaengine.engine.GameEngine;
 import game.dival.divaengine.engine.GameResources;
 import game.dival.divaengine.engine.entity.Camera;
@@ -13,7 +13,6 @@ import game.dival.divaengine.engine.entity.components.Physics;
 import game.dival.divaengine.engine.entity.components.Transformation;
 import game.dival.divaengine.engine.entity.components.model3d.Model3D;
 import game.dival.divaengine.engine.math.Vector3D;
-import game.dival.divaengine.engine.GameController.SensorController;
 
 
 public class MainActivity extends Activity implements GameEngine.GameUpdates {
@@ -41,14 +40,14 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
         gameEngine.addCamera(camera);
 
         Entity cube = new Entity("cube");
-        cubePhysics = new Physics(cube, new Vector3D(0,0.005f,0), 1f, false);
+        cubePhysics = new Physics(cube, new Vector3D(0, 0.005f, 0), 1f, false);
         cubeTrans = new Transformation(cube);
         cube.addComponent(cubeTrans);
         cube.addComponent(new Model3D(cube, "cube", gameEngine));
         cube.addComponent(cubePhysics);
         gameEngine.entities.add(cube);
 
-        sensorController = new SensorController(this,gameEngine);
+        sensorController = new SensorController(this, gameEngine);
 
         addPines(50);
 

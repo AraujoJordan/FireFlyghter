@@ -26,10 +26,7 @@ public class GLESRenderer implements GLSurfaceView.Renderer {
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
-    private final float[] mRotationMatrix = new float[16];
 
-    private float mAngle;
-    private Model3D model3D;
     private GameEngine.GameUpdates gameUpdates;
 
     public GLESRenderer(GameEngine engine, GameEngine.GameUpdates gameUpdates) {
@@ -49,7 +46,7 @@ public class GLESRenderer implements GLSurfaceView.Renderer {
      *
      * @param glOperation - Name of the OpenGL call to check.
      */
-    public static void checkGlError(String glOperation) {
+    public void checkGlError(String glOperation) {
         int error;
         if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
             Log.e(GLESRenderer.class.getCanonicalName(), glOperation + ": glError " + error);
@@ -57,7 +54,7 @@ public class GLESRenderer implements GLSurfaceView.Renderer {
         }
     }
 
-    public static int loadShader(int type, String shaderCode) {
+    public int loadShader(int type, String shaderCode) {
 
         // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
         // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)

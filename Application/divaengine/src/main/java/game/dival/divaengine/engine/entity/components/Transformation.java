@@ -16,9 +16,12 @@ public class Transformation extends Component {
 
     public float[] transformationMatrix = new float[16];
 
-    private Vector3D translation;
-    private Vector3D rotation;
-    private Vector3D scale;
+    private float[] translationMatrix = new float[16];
+    private float[] rotationMatrix= new float[16];
+    private float[] scaleMatrix= new float[16];
+
+
+    private Vector3D translation, rotation, scale;
 
     public Transformation(Entity entity) {
         super(entity);
@@ -33,24 +36,19 @@ public class Transformation extends Component {
 
         float[] resultMatrix = Arrays.copyOf(mMVPMatrix, mMVPMatrix.length);
 
-        float[] translationMatrix = new float[16];
         Matrix.setIdentityM(translationMatrix, 0);
         Matrix.translateM(translationMatrix, 0, translation.xyz[0], translation.xyz[1], translation.xyz[2]);
         Matrix.multiplyMM(resultMatrix, 0, resultMatrix, 0, translationMatrix, 0);
-        transformationMatrix = resultMatrix;
 
-        float[] rotationMatrix = new float[16];
         Matrix.setIdentityM(rotationMatrix, 0);
         Matrix.setRotateEulerM(rotationMatrix, 0, rotation.xyz[0], rotation.xyz[1], rotation.xyz[2]);
         Matrix.multiplyMM(resultMatrix, 0, resultMatrix, 0, rotationMatrix, 0);
-        transformationMatrix = resultMatrix;
 
-        float[] scaleMatrix = new float[16];
         Matrix.setIdentityM(scaleMatrix, 0);
         Matrix.scaleM(scaleMatrix, 0, scale.xyz[0], scale.xyz[1], scale.xyz[2]);
         Matrix.multiplyMM(resultMatrix, 0, resultMatrix, 0, scaleMatrix, 0);
-        transformationMatrix = resultMatrix;
 
+        transformationMatrix = resultMatrix;
     }
 
     public Vector3D getTranslation() {

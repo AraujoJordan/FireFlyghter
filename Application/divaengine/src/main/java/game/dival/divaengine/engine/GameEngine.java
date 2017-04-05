@@ -28,6 +28,7 @@ public class GameEngine {
     private GameUpdates updates;
     private Camera camera;
     private boolean runningEngine;
+    public GLESRenderer glesRenderer;
 
     public GameEngine(Activity activity, GLSurfaceView surfaceOfTheGame, GameResources resources, GameUpdates gameUpdates) {
         SCREEN_WIDTH = surfaceOfTheGame.getWidth();
@@ -38,8 +39,8 @@ public class GameEngine {
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         surface.setEGLContextClientVersion(2);
-        GLESRenderer openGLRenderer = new GLESRenderer(this, gameUpdates);
-        surface.setRenderer(openGLRenderer);
+        glesRenderer = new GLESRenderer(this, gameUpdates);
+        surface.setRenderer(glesRenderer);
 
         hideSystemUI();
         entities = new ArrayList<>();

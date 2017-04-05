@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import game.dival.divaengine.engine.GLESRenderer;
+import game.dival.divaengine.engine.GameEngine;
 import game.dival.divaengine.engine.draw.Color;
 import game.dival.divaengine.engine.math.Vector3D;
 
@@ -50,12 +51,14 @@ public class ModelDraw implements Draw {
     private int mMVPMatrixHandle;
     private int vertexCount;
 
+    private GameEngine engine;
+
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      *
      * @param pixels
      */
-    public ModelDraw(ArrayList<Vector3D> pixels) {
+    public ModelDraw(ArrayList<Vector3D> pixels, GameEngine engine) {
 
         triangleCoords = new float[pixels.size() * 3];
 
@@ -86,15 +89,17 @@ public class ModelDraw implements Draw {
         vertexBuffer.position(0);
 
         // prepare shaders and OpenGL program
-        int vertexShader = GLESRenderer.loadShader(
+        int vertexShader = engine.glesRenderer.loadShader(
                 GLES20.GL_VERTEX_SHADER, vertexShaderCode);
-        int fragmentShader = GLESRenderer.loadShader(
+        int fragmentShader = engine.glesRenderer.loadShader(
                 GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
 
         mProgram = GLES20.glCreateProgram();             // create empty OpenGL Program
         GLES20.glAttachShader(mProgram, vertexShader);   // add the vertex shader to program
         GLES20.glAttachShader(mProgram, fragmentShader); // add the fragment shader to program
         GLES20.glLinkProgram(mProgram);                  // create OpenGL program executables
+
+        this.engine = engine;
     }
 
     /**
@@ -127,11 +132,11 @@ public class ModelDraw implements Draw {
 
         // get handle to shape's transformation matrix
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-        GLESRenderer.checkGlError("glGetUniformLocation " + Arrays.toString(mvpMatrix));
+        engine.glesRenderer.checkGlError("glGetUniformLocation " + Arrays.toString(mvpMatrix));
 
         // Apply the projection and view transformation
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        GLESRenderer.checkGlError("glUniformMatrix4fv " + Arrays.toString(mvpMatrix));
+        engine.glesRenderer.checkGlError("glUniformMatrix4fv " + Arrays.toString(mvpMatrix));
 
         // Draw the triangles
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
