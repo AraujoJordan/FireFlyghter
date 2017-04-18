@@ -58,8 +58,6 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
 //        fireParticles.addComponent(new Transformation(fireParticles));
 //        gameEngine.entities.add(fireParticles);
 //        fireParticles.initFire();
-
-        gameEngine.getCamera().getTransformation().setTranslation(new Vector3D(0, 0, -30));
     }
 
     public double randDouble(double bound1, double bound2) {
@@ -84,22 +82,12 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
     @Override
     public void gameFrame() {
         value += variation;
-        Transformation cameraTrans = gameEngine.getCamera().getTransformation();
-//        Log.d(getClass().getSimpleName(),"gameFrame()");
 
         cubeTrans.setRotation(
                 new Vector3D(
                         cubeTrans.getTranslation().getX() + 100 * value,
                         cubeTrans.getTranslation().getY(),
                         cubeTrans.getTranslation().getZ())
-        );
-
-
-        cameraTrans.setTranslation(
-                new Vector3D(
-                        -value,
-                        value,
-                        -value)
         );
     }
 

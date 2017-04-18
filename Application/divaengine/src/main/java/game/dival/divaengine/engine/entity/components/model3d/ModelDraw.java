@@ -8,7 +8,6 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import game.dival.divaengine.engine.GLESRenderer;
 import game.dival.divaengine.engine.GameEngine;
 import game.dival.divaengine.engine.draw.Color;
 import game.dival.divaengine.engine.math.Vector3D;
@@ -19,6 +18,7 @@ import game.dival.divaengine.engine.math.Vector3D;
 
 public class ModelDraw implements Draw {
 
+    private static final int COORDS_PER_VERTEX = 3; // number of coordinates per vertex in this array
     private final String vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
             // the coordinates of the objects that use this vertex shader
@@ -31,16 +31,12 @@ public class ModelDraw implements Draw {
                     // for the matrix multiplication product to be correct.
                     "  gl_Position = uMVPMatrix * vPosition;" +
                     "}";
-
     private final String fragmentShaderCode =
             "precision mediump float;" +
                     "uniform vec4 vColor;" +
                     "void main() {" +
                     "  gl_FragColor = vColor;" +
                     "}";
-
-
-    private static final int COORDS_PER_VERTEX = 3; // number of coordinates per vertex in this array
     private final FloatBuffer vertexBuffer;
     private final int mProgram;
     private final float triangleCoords[];

@@ -5,8 +5,8 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
 import game.dival.divaengine.engine.GameEngine;
-import game.dival.divaengine.engine.renderer.GameResources;
-import game.dival.divaengine.engine.entity.camera.ThirdPersonCamera;
+import game.dival.divaengine.engine.GameResources;
+import game.dival.divaengine.engine.entity.Camera;
 import game.dival.divaengine.engine.entity.Entity;
 import game.dival.divaengine.engine.entity.components.Physics;
 import game.dival.divaengine.engine.entity.components.Transformation;
@@ -35,7 +35,7 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
         resources.addOBJ(this, "cube", "cube.obj");
 
         gameEngine = new GameEngine(this, glSurface, resources, this);
-        ThirdPersonCamera thirdPersonCamera = new ThirdPersonCamera(gameEngine, "mainCamera");
+        Camera thirdPersonCamera = new Camera(gameEngine, "mainCamera");
         gameEngine.addCamera(thirdPersonCamera);
 
         Entity cube = new Entity("cube");
@@ -48,14 +48,12 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
 
 //        sensorController = new SensorController(this,gameEngine);
 
-        addPines(50);
+        addPines(15);
 
 //        FireParticles fireParticles = new FireParticles(gameEngine);
 //        fireParticles.addComponent(new Transformation(fireParticles));
 //        gameEngine.entities.add(fireParticles);
 //        fireParticles.initFire();
-
-        gameEngine.getThirdPersonCamera().getTransformation().setTranslation(new Vector3D(0, 0, -30));
     }
 
     public double randDouble(double bound1, double bound2) {
@@ -80,9 +78,6 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
     @Override
     public void gameFrame() {
         value += variation;
-        Transformation cameraTrans = gameEngine.getThirdPersonCamera().getTransformation();
-//        Log.d(getClass().getSimpleName(),"gameFrame()");
-
         cubeTrans.setRotation(
                 new Vector3D(
                         cubeTrans.getTranslation().getX() + 100 * value,
@@ -95,12 +90,6 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
                         cubeTrans.getTranslation().getX(),
                         cubeTrans.getTranslation().getY() + value / 200,
                         cubeTrans.getTranslation().getZ())
-        );
-        cameraTrans.setTranslation(
-                new Vector3D(
-                        -value,
-                        value,
-                        -value)
         );
     }
 

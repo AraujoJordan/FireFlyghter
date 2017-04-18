@@ -13,6 +13,7 @@ import game.dival.divaengine.engine.entity.Camera;
 import game.dival.divaengine.engine.entity.Entity;
 import game.dival.divaengine.engine.entity.components.Component;
 import game.dival.divaengine.engine.entity.components.model3d.Model3D;
+import game.dival.divaengine.engine.renderer.GLESRenderer;
 
 
 /**
@@ -23,12 +24,12 @@ public class GameEngine {
     public final int SCREEN_WIDTH, SCREEN_HEIGHT;
     public ArrayList<Entity> entities;
     public GameResources resouces;
+    public GLESRenderer glesRenderer;
     private GLSurfaceView surface;
     private Activity activity;
     private GameUpdates updates;
     private Camera camera;
     private boolean runningEngine;
-    public GLESRenderer glesRenderer;
 
     public GameEngine(Activity activity, GLSurfaceView surfaceOfTheGame, GameResources resources, GameUpdates gameUpdates) {
         SCREEN_WIDTH = surfaceOfTheGame.getWidth();
