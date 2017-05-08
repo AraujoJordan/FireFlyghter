@@ -3,17 +3,16 @@ package game.dival.fireflyghter;
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.view.WindowManager;
 
-import game.dival.divaengine.engine.GameController.SensorController;
-import game.dival.divaengine.engine.GameEngine;
-import game.dival.divaengine.engine.GameResources;
-import game.dival.divaengine.engine.entity.Camera;
-import game.dival.divaengine.engine.entity.Entity;
-import game.dival.divaengine.engine.entity.components.Physics;
-import game.dival.divaengine.engine.entity.components.Transformation;
-import game.dival.divaengine.engine.entity.components.model3d.Model3D;
-import game.dival.divaengine.engine.math.Vector3D;
+import game.dival.fireflyghter.engine.GameController.SensorController;
+import game.dival.fireflyghter.engine.GameEngine;
+import game.dival.fireflyghter.engine.GameResources;
+import game.dival.fireflyghter.engine.entity.Camera;
+import game.dival.fireflyghter.engine.entity.Entity;
+import game.dival.fireflyghter.engine.entity.components.Physics;
+import game.dival.fireflyghter.engine.entity.components.Transformation;
+import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
+import game.dival.fireflyghter.engine.math.Vector3D;
 
 
 public class MainActivity extends Activity implements GameEngine.GameUpdates {
@@ -28,16 +27,13 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.requestWindowFeature(getWindow().FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         setContentView(R.layout.activity_main);
         GLSurfaceView glSurface = (GLSurfaceView) findViewById(R.id.glSurface);
 
         // EXAMPLE OF PINE TREE ON DivaEngine
         GameResources resources = new GameResources();
-        resources.addOBJ(this, "pine", "Stormtrooper.obj");
-        resources.addOBJ(this, "cube", "monkey_head.obj");
+        resources.addOBJ(this, "pine", "pine.obj");
+        resources.addOBJ(this, "cube", "cube.obj");
 
         gameEngine = new GameEngine(this, glSurface, resources, this);
         Camera camera = new Camera(gameEngine, "mainCamera");
@@ -76,7 +72,7 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
         for (int i = 0; i <= numerOfPines; i++) {
             Entity pine = new Entity("pine" + i); // Create PINE
             Transformation transformation = new Transformation(pine);
-            transformation.setTranslation(new Vector3D((float) randDouble(-50, 25), 0, (float) randDouble(-50, 25)));
+            transformation.setTranslation(new Vector3D((float) randDouble(-25, 25), 0, (float) randDouble(-25, 25)));
             pine.addComponent(new Model3D(pine, "pine", gameEngine));
             pine.addComponent(transformation); //add translation, scale, rotation
             gameEngine.entities.add(pine);

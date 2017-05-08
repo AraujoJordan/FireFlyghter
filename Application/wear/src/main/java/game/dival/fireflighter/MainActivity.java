@@ -4,14 +4,14 @@ import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
-import game.dival.divaengine.engine.GameEngine;
-import game.dival.divaengine.engine.GameResources;
-import game.dival.divaengine.engine.entity.Camera;
-import game.dival.divaengine.engine.entity.Entity;
-import game.dival.divaengine.engine.entity.components.Physics;
-import game.dival.divaengine.engine.entity.components.Transformation;
-import game.dival.divaengine.engine.entity.components.model3d.Model3D;
-import game.dival.divaengine.engine.math.Vector3D;
+import game.dival.fireflyghter.engine.GameEngine;
+import game.dival.fireflyghter.engine.GameResources;
+import game.dival.fireflyghter.engine.entity.Camera;
+import game.dival.fireflyghter.engine.entity.Entity;
+import game.dival.fireflyghter.engine.entity.components.Physics;
+import game.dival.fireflyghter.engine.entity.components.Transformation;
+import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
+import game.dival.fireflyghter.engine.math.Vector3D;
 
 
 public class MainActivity extends Activity implements GameEngine.GameUpdates {
