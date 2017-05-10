@@ -1,7 +1,5 @@
 package game.dival.fireflyghter.engine.utils;
 
-import android.util.Log;
-
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
@@ -23,9 +21,7 @@ public class RandomElements {
     }
 
     public static void addRandomPines(int numerOfPines, int distance, GameEngine engine) {
-        Log.d("RandomElements", "addRandomPines");
         for (int i = 0; i <= numerOfPines; i++) {
-            Log.d("addPines", "addRandomPines " + i);
             Entity pine = new Entity("pine" + i); // Create PINE
             Transformation transformation = new Transformation(pine);
             transformation.setTranslation(new Vector3D((float) randDouble(-distance, distance), 0, (float) randDouble(-distance, distance)));

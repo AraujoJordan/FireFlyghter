@@ -40,11 +40,11 @@ public class MainActivity extends Activity implements GameEngine.GameUpdates {
         gameEngine.addCamera(camera);
 
         Entity cube = new Entity("cube");
-        cubePhysics = new Physics(cube, new Vector3D(0, 0.005f, 0), 1f, false);
+//        cubePhysics = new Physics(cube, new Vector3D(0, 0.005f, 0), 1f, false);
         cubeTrans = new Transformation(cube);
         cube.addComponent(cubeTrans);
         cube.addComponent(new Model3D(cube, "cube", gameEngine));
-        cube.addComponent(cubePhysics);
+//        cube.addComponent(cubePhysics);
         gameEngine.entities.add(cube);
 
         sensorController = new SensorController(this, gameEngine);

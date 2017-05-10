@@ -13,7 +13,7 @@ import game.dival.fireflyghter.engine.math.Vector3D;
 
 public class Camera extends Entity {
 
-    private final float CAMERA_DISTANCE = 0.5f;
+    private final float CAMERA_DISTANCE = 5f;
     private Transformation followTransformation = null;
     private SensorController sensor;
 

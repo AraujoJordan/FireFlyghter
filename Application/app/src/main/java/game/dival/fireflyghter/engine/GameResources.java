@@ -1,7 +1,6 @@
 package game.dival.fireflyghter.engine;
 
 import android.app.Activity;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -133,11 +132,13 @@ public class GameResources {
 
                 // if normal vector
                 else if ("vn".equals(keyword)) {
+//                    Log.d("VerticeNormal",line);
                     Vector3D normal = new Vector3D(
                             Float.valueOf(tokens[1]),
                             Float.valueOf(tokens[2]),
-                            Float.valueOf(tokens[3]));
+                            Float.valueOf(tokens[2]));
                     vnormals.add(normal);
+//                    Log.d("VerticeNormal",""+tokens[1]+" "+ tokens[2]+" "+tokens[3]);
                 }
 
                 // if face
@@ -150,7 +151,7 @@ public class GameResources {
                     // Each token corresponds to 1 vertex entry and possibly one texture entry and normal entry.
                     Vector3D[] face = new Pixel[3];
 
-                    Log.d("Face", line);
+//                    Log.d("Face", line);
 
 
                     for (int i = 0; i < face.length; i++) {

@@ -26,22 +26,19 @@ import game.dival.fireflyghter.engine.renderer.GLESRenderer;
 public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
 
     // We keep the light always position just above the user.
-    private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{0.0f, 30.0f, 0.0f, 1.0f};
-    private static final float Z_NEAR = 4f;
+    private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{0.0f, 100.0f, 0.0f, 1.0f};
+    private static final float Z_NEAR = 1f;
     private static final float Z_FAR = 1000f;
-    private static final float CAMERA_Z = 0.01f;
-    // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
-//    public static float[] mMVPMatrix = new float[16];
-    public static float[] mProjectionMatrix = new float[16];
+
     public static float[] mViewMatrix = new float[16];
-    public static float[] mProjViewMatrix = new float[16];
-    public static float[] perspective;
+    public static float[] mProjectionViewMatrix = new float[16];
+
     public static float[] fowardDirection = new float[3];
     public float[] lightPosInEyeSpace = new float[16];
     public GvrView gvrView;
     private GameEngine engine;
     private float[] camera = new float[16];
-    private float[] headView = new float[16];
+//    private float[] headView = new float[16];
 
     /**
      * Utility method for debugging OpenGL calls. Provide the name of the call
@@ -94,7 +91,7 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
 
         //MATRIX DA CAMERA CRIADA AQUI
         GLES20.glClearColor(0.1f, 0.1f, 0.1f, 0.5f);
-        headTransform.getHeadView(headView, 0);
+//        headTransform.getHeadView(headView, 0);
         camera = engine.getCamera().updateCamera();
 
         headTransform.getForwardVector(fowardDirection, 0);
@@ -109,19 +106,19 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
 
         VrActivity.checkGlError("colorParam");
 
+        //-----------------------------------------------------------------------------------------
+        //DA CAMERA, CRIA-SE A VIEW NA POSIÇAO DO OLHO
+        Matrix.multiplyMM(mViewMatrix, 0, eye.getEyeView(), 0, camera, 0);
+
         //CALCULO DA LUZ E PERSPECTIVA
         //-----------------------------------------------------------------------------------------
         // Set the position of the light
         Matrix.multiplyMV(lightPosInEyeSpace, 0, mViewMatrix, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
-        // Build the ModelView and ModelViewProjection matrices
-        // for calculating cube position and light.
-        perspective = eye.getPerspective(Z_NEAR, Z_FAR);
+        float[] mProjectionMatrix = eye.getPerspective(Z_NEAR, Z_FAR);
+
         //-----------------------------------------------------------------------------------------
-        //DA CAMERA, CRIA-SE A VIEW NA POSIÇAO DO OLHO
-        Matrix.multiplyMM(mViewMatrix, 0, eye.getEyeView(), 0, camera, 0);
-        //-----------------------------------------------------------------------------------------
-        Matrix.multiplyMM(mProjViewMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-        engine.engineUpdates(mProjViewMatrix);
+        Matrix.multiplyMM(mProjectionViewMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+        engine.engineUpdates(mProjectionViewMatrix);
         //-----------------------------------------------------------------------------------------
 
     }
@@ -133,17 +130,6 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
 
     @Override
     public void onSurfaceChanged(int i, int i1) {
-        //COMEÇA AQUI
-
-        // Adjust the viewport based on geometry changes,
-        // such as screen rotation
-        GLES20.glViewport(0, 0, getWindow().getWindowManager().getDefaultDisplay().getWidth(), getWindow().getWindowManager().getDefaultDisplay().getHeight());
-
-        float ratio = ((float) getWindow().getWindowManager().getDefaultDisplay().getWidth() / getWindow().getWindowManager().getDefaultDisplay().getHeight()) / 2;
-
-        // this projection matrix is applied to object coordinates
-        // in the onDrawFrame() method
-        Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, Z_NEAR, Z_FAR);
 
         // Use culling to remove back faces.
         GLES20.glEnable(GLES20.GL_CULL_FACE);
@@ -170,5 +156,23 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
     @Override
     public void onRendererShutdown() {
 
+    }
+
+    @Override
+    protected void onPause() {
+        engine.pause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        engine.play();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        engine.finish();
     }
 }

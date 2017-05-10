@@ -53,34 +53,24 @@ public class ModelDrawVR implements Draw {
         float[] vertCoords = new float[pixels.size() * 3];
         int index = 0;
         for (Vector3D vert : pixels) {
-            vertCoords[index] = vert.xyz[0];
-            index++;
-            vertCoords[index] = vert.xyz[1];
-            index++;
-            vertCoords[index] = vert.xyz[2];
-            index++;
+            vertCoords[index++] = vert.xyz[0];
+            vertCoords[index++] = vert.xyz[1];
+            vertCoords[index++] = vert.xyz[2];
         }
         float[] normalCoords = new float[normals.size() * 3];
         index = 0;
         for (Vector3D normal : normals) {
-            normalCoords[index] = normal.xyz[0];
-            index++;
-            normalCoords[index] = normal.xyz[1];
-            index++;
-            normalCoords[index] = normal.xyz[2];
-            index++;
+            normalCoords[index++] = normal.xyz[0];
+            normalCoords[index++] = normal.xyz[1];
+            normalCoords[index++] = normal.xyz[2];
         }
         float[] colorCoords = new float[pixels.size() * 4];
         index = 0;
         for (int i = 0; i < pixels.size(); i++) {
-            colorCoords[index] = color[0];
-            index++;
-            colorCoords[index] = color[1];
-            index++;
-            colorCoords[index] = color[2];
-            index++;
-            colorCoords[index] = color[3];
-            index++;
+            colorCoords[index++] = color[0];
+            colorCoords[index++] = color[1];
+            colorCoords[index++] = color[2];
+            colorCoords[index++] = color[3];
         }
 
         vertexCount = vertCoords.length / COORDS_PER_VERTEX;
@@ -128,35 +118,34 @@ public class ModelDrawVR implements Draw {
     /**
      * Encapsulates the OpenGL ES instructions for drawing the triangle.
      *
-     * @param mvpMatrix - The Model View Project matrix in which to draw
+     * @param t - The ProjectionView matrix in which to draw
      *                  this shape.
      */
-    public void run(float[] mvpMatrix) {
+    public void run(float[] t) {
 
-        //MVP
-//        float[] modelViewProj = new float[16];
-
-//        Matrix.multiplyMM(modelViewProj, 0, entity.getTransformation().modelMatrix, 0, mvpMatrix, 0);
+        //Calculate mvp
+        float[] modelViewProjMatrix = new float[16];
+        Matrix.multiplyMM(modelViewProjMatrix, 0, VrActivity.mProjectionViewMatrix, 0, entity.getTransformation().modelMatrix, 0);
 
         GLES20.glUseProgram(mProgram);
 
         GLES20.glUniform3fv(modelLightPosParam, 1, engine.getActivity().lightPosInEyeSpace, 0);
 
         // Set the Model in the shader, used to calculate lighting
-        GLES20.glUniformMatrix4fv(modelModelParam, 1, false, entity.getTransformation().pureModelMatrix, 0);
+        GLES20.glUniformMatrix4fv(modelModelParam, 1, false, entity.getTransformation().modelMatrix, 0);
 
-        float[] modelView = new float[16];
-        Matrix.multiplyMM(modelView, 0, entity.getTransformation().pureModelMatrix, 0, VrActivity.mViewMatrix, 0);
+        float[] modelViewMatrix = new float[16];
+        Matrix.multiplyMM(modelViewMatrix, 0, VrActivity.mViewMatrix, 0, entity.getTransformation().modelMatrix, 0);
 
         // Set the ModelView in the shader, used to calculate lighting
-        GLES20.glUniformMatrix4fv(modelModelViewParam, 1, false, modelView, 0);
+        GLES20.glUniformMatrix4fv(modelModelViewParam, 1, false, modelViewMatrix, 0);
 
         // Set the position of the model
         GLES20.glVertexAttribPointer(
                 modelPositionParam, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, vertexBuffer);
 
         // Set the ModelViewProjection matrix in the shader.
-        GLES20.glUniformMatrix4fv(modelModelViewProjectionParam, 1, false, mvpMatrix, 0);
+        GLES20.glUniformMatrix4fv(modelModelViewProjectionParam, 1, false, modelViewProjMatrix, 0);
 
         // Set the normal positions of the model, again for shading
         GLES20.glVertexAttribPointer(modelNormalParam, 3, GLES20.GL_FLOAT, false, 0, normalBuffer);

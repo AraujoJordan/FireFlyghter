@@ -1,8 +1,7 @@
 package game.dival.fireflyghter;
 
 import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.KeyEvent;
 
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.GameResources;
@@ -18,12 +17,9 @@ import game.dival.fireflyghter.engine.utils.RandomElements;
 
 public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates {
 
-    float value = 0f;
-    float variation = 0.01f;
     private VREngine gameEngine;
     private Transformation cubeTrans;
     private Entity cube;
-    private boolean isMoving;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,6 +29,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         GameResources resources = new GameResources();
         resources.addOBJ(this, "pine", "pine.obj");
         resources.addOBJ(this, "cube", "cube.obj");
+        resources.addOBJ(this, "floor", "plane.obj");
 
         gameEngine = new VREngine(this, resources, this);
 
@@ -41,22 +38,22 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
 
         cube = new Entity("cube");
         cubeTrans = new Transformation(cube);
-        cubeTrans.setTranslation(new Vector3D(0, 0, -5));
+        cubeTrans.setTranslation(new Vector3D(0, 5, -5));
         cube.addComponent(cubeTrans);
         cube.addComponent(new Model3D(cube, "cube", gameEngine));
         gameEngine.entities.add(cube);
 
+        Entity floor = new Entity("floor");
+        Transformation floorTrans = new Transformation(floor);
+        floorTrans.setTranslation(new Vector3D(0, 0, 0));
+        floorTrans.setScale(new Vector3D(500, 1, 500));
+        floor.addComponent(floorTrans);
+        floor.addComponent(new Model3D(floor, "floor", gameEngine));
+        gameEngine.entities.add(floor);
+
         RandomElements.addRandomPines(50, 50, gameEngine);
 
         camera.followEntity(cube);
-
-        gvrView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                isMoving = !isMoving;
-                return false;
-            }
-        });
 
 //        FireParticles fireParticles = new FireParticles(gameEngine);
 //        fireParticles.addComponent(new Transformation(fireParticles));
@@ -65,31 +62,21 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
     }
 
     @Override
-    public void gameFrame() {
-
-        value += variation;
-
-        if (isMoving) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
             Vector3D translation = cube.getTransformation().getTranslation();
             cube.getTransformation().setTranslation(new Vector3D(translation.getX() - fowardDirection[0], translation.getY() + fowardDirection[1], translation.getZ() - fowardDirection[2]));
         }
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP)) {
+            Vector3D translation = cube.getTransformation().getTranslation();
+            cube.getTransformation().setTranslation(new Vector3D(translation.getX() + fowardDirection[0], translation.getY() - fowardDirection[1], translation.getZ() + fowardDirection[2]));
+        }
+        return true;
     }
 
     @Override
-    protected void onPause() {
-        gameEngine.pause();
-        super.onPause();
+    public void gameFrame() {
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        gameEngine.play();
-    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        gameEngine.finish();
-    }
 }

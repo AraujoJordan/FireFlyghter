@@ -2,8 +2,6 @@ package game.dival.fireflyghter.engine.entity.components;
 
 import android.opengl.Matrix;
 
-import java.util.Arrays;
-
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.math.Vector3D;
@@ -15,7 +13,6 @@ import game.dival.fireflyghter.engine.math.Vector3D;
 public class Transformation extends Component {
 
     public float[] modelMatrix = new float[16];
-    public float[] pureModelMatrix = new float[16];
 
     private float[] translationMatrix = new float[16];
     private float[] rotationMatrix = new float[16];
@@ -41,39 +38,20 @@ public class Transformation extends Component {
     @Override
     public void run(GameEngine engine, float[] viewProj) {
 
-//        Matrix.setIdentityM(modelMatrix, 0);
-
-//        Matrix.setIdentityM(translationMatrix, 0);
-//        Matrix.translateM(translationMatrix, 0, translation.xyz[0], translation.xyz[1], translation.xyz[2]);
-//
-//        Matrix.setIdentityM(rotationMatrix, 0);
-//        Matrix.setRotateEulerM(rotationMatrix, 0, rotation.xyz[0], rotation.xyz[1], rotation.xyz[2]);
-//
-//        Matrix.setIdentityM(scaleMatrix, 0);
-//        Matrix.scaleM(scaleMatrix, 0, scale.xyz[0], scale.xyz[1], scale.xyz[2]);
-//
-//        float[] rotScaleMatrix = new float[16];
-//        Matrix.multiplyMM(rotScaleMatrix, 0, rotationMatrix, 0, scaleMatrix, 0);
-//        Matrix.multiplyMM(modelMatrix, 0, translationMatrix, 0, rotScaleMatrix, 0);
-
-        float[] resultMatrix = Arrays.copyOf(viewProj, viewProj.length);
+        Matrix.setIdentityM(modelMatrix, 0);
 
         Matrix.setIdentityM(translationMatrix, 0);
         Matrix.translateM(translationMatrix, 0, translation.xyz[0], translation.xyz[1], translation.xyz[2]);
-        Matrix.multiplyMM(resultMatrix, 0, resultMatrix, 0, translationMatrix, 0);
 
         Matrix.setIdentityM(rotationMatrix, 0);
         Matrix.setRotateEulerM(rotationMatrix, 0, rotation.xyz[0], rotation.xyz[1], rotation.xyz[2]);
-        Matrix.multiplyMM(resultMatrix, 0, resultMatrix, 0, rotationMatrix, 0);
 
         Matrix.setIdentityM(scaleMatrix, 0);
         Matrix.scaleM(scaleMatrix, 0, scale.xyz[0], scale.xyz[1], scale.xyz[2]);
-        Matrix.multiplyMM(modelMatrix, 0, resultMatrix, 0, scaleMatrix, 0);
 
-
-        Matrix.setIdentityM(resultMatrix, 0);
-        Matrix.multiplyMM(resultMatrix, 0, rotationMatrix, 0, scaleMatrix, 0);
-        Matrix.multiplyMM(pureModelMatrix, 0, translationMatrix, 0, resultMatrix, 0);
+        float[] rotScaleMatrix = new float[16];
+        Matrix.multiplyMM(rotScaleMatrix, 0, rotationMatrix, 0, scaleMatrix, 0);
+        Matrix.multiplyMM(modelMatrix, 0, translationMatrix, 0, rotScaleMatrix, 0);
     }
 
     public Vector3D getTranslation() {
