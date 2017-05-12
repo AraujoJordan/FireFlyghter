@@ -5,5 +5,5 @@ package game.dival.fireflyghter.engine.entity.components.model3d;
  */
 
 public interface Draw {
-    void run(float[] mvpMatrix);
+    void draw();
 }

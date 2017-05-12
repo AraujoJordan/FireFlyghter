@@ -4,7 +4,6 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.google.vr.sdk.base.AndroidCompat;
 import com.google.vr.sdk.base.Eye;
@@ -17,7 +16,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 
 import game.dival.fireflyghter.R;
 import game.dival.fireflyghter.engine.entity.Entity;
-import game.dival.fireflyghter.engine.renderer.GLESRenderer;
+import game.dival.fireflyghter.engine.renderer.GLUtils;
 
 /**
  * Created by jordan on 02/05/17.
@@ -25,40 +24,18 @@ import game.dival.fireflyghter.engine.renderer.GLESRenderer;
 
 public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
 
-    // We keep the light always position just above the user.
-    private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{0.0f, 100.0f, 0.0f, 1.0f};
     private static final float Z_NEAR = 1f;
     private static final float Z_FAR = 1000f;
-
+    public static float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{-500.0f, 1f, 0.0f, 1.0f};
     public static float[] mViewMatrix = new float[16];
     public static float[] mProjectionViewMatrix = new float[16];
-
-    public static float[] fowardDirection = new float[3];
+    // We keep the light always position just above the user.
     public float[] lightPosInEyeSpace = new float[16];
-    public GvrView gvrView;
-    private GameEngine engine;
+    private GvrView gvrView;
+    private VREngine engine;
     private float[] camera = new float[16];
-//    private float[] headView = new float[16];
+    private double theta = 0;
 
-    /**
-     * Utility method for debugging OpenGL calls. Provide the name of the call
-     * just after making it:
-     * <p>
-     * <pre>
-     * mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-     * MyGLRenderer.checkGlError("glGetUniformLocation");</pre>
-     * <p>
-     * If the operation is not successful, the check throws an error.
-     *
-     * @param glOperation - Name of the OpenGL call to check.
-     */
-    public static void checkGlError(String glOperation) {
-        int error;
-        if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
-            Log.e(GLESRenderer.class.getCanonicalName(), glOperation + ": glError " + error);
-            throw new RuntimeException(glOperation + ": glError " + error);
-        }
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,7 +43,6 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
         setContentView(R.layout.vr);
 
         gvrView = (GvrView) findViewById(R.id.gvr_view);
-        gvrView.setEGLConfigChooser(8, 8, 8, 8, 16, 8);
 
         gvrView.setRenderer(this);
         gvrView.setTransitionViewEnabled(true);
@@ -87,16 +63,16 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
 
     @Override
     public void onNewFrame(HeadTransform headTransform) {
-//                Log.d(getClass().getSimpleName(),"onDrawFrame()");
 
-        //MATRIX DA CAMERA CRIADA AQUI
-        GLES20.glClearColor(0.1f, 0.1f, 0.1f, 0.5f);
-//        headTransform.getHeadView(headView, 0);
-        camera = engine.getCamera().updateCamera();
+        //Creation of a beautiful blue sky
+        GLES20.glClearColor(0.529411765f, 0.807843137f, 0.980392157f, 1.0f);
 
-        headTransform.getForwardVector(fowardDirection, 0);
-//        Matrix.setLookAtM(camera, 0, 0.0f, 0.0f, CAMERA_Z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+        //Get the Camera Matrix
+        camera = engine.getCamera().updateCamera(headTransform);
+
+        engine.engineUpdates();
     }
+
 
     @Override
     public void onDrawEye(Eye eye) {
@@ -104,21 +80,30 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-        VrActivity.checkGlError("colorParam");
+        GLUtils.checkGlError("colorParam");
 
         //-----------------------------------------------------------------------------------------
-        //DA CAMERA, CRIA-SE A VIEW NA POSIÇAO DO OLHO
+        //VIEW MATRIX CREATION
         Matrix.multiplyMM(mViewMatrix, 0, eye.getEyeView(), 0, camera, 0);
 
-        //CALCULO DA LUZ E PERSPECTIVA
+        //MAKE LIGHT ROTATE THE SCREEN
         //-----------------------------------------------------------------------------------------
-        // Set the position of the light
+        float R = 300f;
+        theta = theta + 0.005f;
+        float sunX = (float) (R * Math.cos(theta));
+        float sunZ = (float) (R * Math.sin(theta));
+        LIGHT_POS_IN_WORLD_SPACE = new float[]{sunX, 10f, sunZ, 1.0f};
         Matrix.multiplyMV(lightPosInEyeSpace, 0, mViewMatrix, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
+
+        //PROJECTION MATRIX CREATION
         float[] mProjectionMatrix = eye.getPerspective(Z_NEAR, Z_FAR);
 
         //-----------------------------------------------------------------------------------------
+        //PROJECTIONVIEW MATRIX CREATION
         Matrix.multiplyMM(mProjectionViewMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-        engine.engineUpdates(mProjectionViewMatrix);
+
+        //UPDATE THE MODELS WITH THE PROJECTIONVIEW MATRIX
+        engine.draw();
         //-----------------------------------------------------------------------------------------
 
     }
@@ -138,19 +123,14 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
     }
 
-    public void setup(GameEngine engine) {
+    public void setup(VREngine engine) {
         this.engine = engine;
     }
 
     @Override
     public void onSurfaceCreated(EGLConfig eglConfig) {
-
-        // Set the background frame color
-        GLES20.glClearColor(0.1f, 0.1f, 0.1f, 0.5f);
-
         for (Entity entity : engine.entities)
             entity.getModel3D().initTriangles();
-
     }
 
     @Override

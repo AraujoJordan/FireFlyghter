@@ -25,6 +25,14 @@ public class Physics extends Component {
 
     }
 
+    public Physics(Vector3D inertiaVector, float weight, boolean hasGravity) {
+        super();
+        this.inertiaVector = inertiaVector;
+        setWeight(weight);
+        this.hasGravity = hasGravity;
+
+    }
+
     public float getWeight() {
         return weight;
     }
@@ -52,7 +60,7 @@ public class Physics extends Component {
     }
 
     @Override
-    public void run(GameEngine engine, float[] mMVPMatrix) {
+    public void run(GameEngine engine) {
         if (hasGravity)
             applyForce(GRAVITY_FORCE);
 

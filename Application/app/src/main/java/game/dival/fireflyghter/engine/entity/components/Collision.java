@@ -21,6 +21,11 @@ abstract class Collision extends Component {
         entitiesToCollide = new ArrayList<>();
     }
 
+    public Collision() {
+        super();
+        entitiesToCollide = new ArrayList<>();
+    }
+
     public void addCollisionListener(Entity entity, CollisionListener trigger) {
         entitiesToCollide.add(entity);
         this.trigger = trigger;

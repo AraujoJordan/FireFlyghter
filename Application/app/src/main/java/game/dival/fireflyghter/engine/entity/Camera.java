@@ -2,8 +2,8 @@ package game.dival.fireflyghter.engine.entity;
 
 import android.opengl.Matrix;
 
-import game.dival.fireflyghter.engine.GameController.SensorController;
-import game.dival.fireflyghter.engine.GameEngine;
+import com.google.vr.sdk.base.HeadTransform;
+
 import game.dival.fireflyghter.engine.entity.components.Transformation;
 import game.dival.fireflyghter.engine.math.Vector3D;
 
@@ -13,53 +13,44 @@ import game.dival.fireflyghter.engine.math.Vector3D;
 
 public class Camera extends Entity {
 
-    private final float CAMERA_DISTANCE = 5f;
+    private final float CAMERA_DISTANCE = 0.01f;
     private Transformation followTransformation = null;
-    private SensorController sensor;
+    private HeadTransform headTransform;
+    private float[] cameraMatrix = new float[16];
 
-    public Camera(GameEngine engine, String cameraName) {
+    public Camera(String cameraName) {
         super(cameraName);
+
         addComponent(new Transformation(this));
     }
 
-    public void setSensor(SensorController sensor) {
-        this.sensor = sensor;
+    public Vector3D getLookDirection() {
+        float[] floatDirection = new float[3];
+        headTransform.getForwardVector(floatDirection, 0);
+        return new Vector3D(floatDirection[0], floatDirection[1], floatDirection[2]);
     }
 
-    public float[] updateCamera() {
-        float[] lookAtMatrix;
+    public float[] updateCamera(HeadTransform headTransform) {
 
-        Transformation t = getTransformation();
+        Transformation camTransformation = getTransformation();
+        Vector3D camTranslation = camTransformation.getTranslation();
+        this.headTransform = headTransform;
 
-        // Camera has to be some distance back of the entity to be follow,
-        // for now, it will only be in the object to follow
         if (followTransformation != null) {
-            t.setTranslation(new Vector3D(
-                    followTransformation.getTranslation().getX(),
-                    followTransformation.getTranslation().getY(),
-                    followTransformation.getTranslation().getZ()
-            ));
+            Vector3D followTrans = followTransformation.getTranslation();
+            getTransformation().setTranslation(followTrans.xyz[0], followTrans.xyz[1], followTrans.xyz[2] - CAMERA_DISTANCE);
         }
 
-        if (sensor != null) {
-            lookAtMatrix = new float[]{
-                    (float) ((t.getTranslation().xyz[0] + CAMERA_DISTANCE) * Math.cos(sensor.z)), (float) ((t.getTranslation().xyz[1] + CAMERA_DISTANCE) * Math.cos(sensor.y)), (float) ((t.getTranslation().xyz[2] + CAMERA_DISTANCE) * Math.sin(sensor.z)),
-                    t.getTranslation().xyz[0], t.getTranslation().xyz[1], t.getTranslation().xyz[2],
-                    0, 1, 0
-            };
-        } else
-            lookAtMatrix = new float[]{
-                    t.getTranslation().xyz[0], t.getTranslation().xyz[1], t.getTranslation().xyz[2] - CAMERA_DISTANCE,
-                    t.getTranslation().xyz[0], t.getTranslation().xyz[1], t.getTranslation().xyz[2] + CAMERA_DISTANCE,
-                    0, 1, 0
-            };
+        camTransformation = getTransformation();
+        camTranslation = camTransformation.getTranslation();
 
-        float[] camera = new float[16];
-        Matrix.setLookAtM(camera, 0,
-                lookAtMatrix[0], lookAtMatrix[1], lookAtMatrix[2],
-                lookAtMatrix[3], lookAtMatrix[4], lookAtMatrix[5],
-                lookAtMatrix[6], lookAtMatrix[7], lookAtMatrix[8]);
-        return camera;
+        //update camera vector
+        Matrix.setLookAtM(cameraMatrix, 0,
+                camTranslation.xyz[0], camTranslation.xyz[1], camTranslation.xyz[2] + CAMERA_DISTANCE,
+                camTranslation.xyz[0], camTranslation.xyz[1], camTranslation.xyz[2],
+                0, 1, 0);
+
+        return cameraMatrix;
     }
 
     public void followEntity(Entity entity) {

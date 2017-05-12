@@ -18,6 +18,7 @@ public class Transformation extends Component {
     private float[] rotationMatrix = new float[16];
     private float[] scaleMatrix = new float[16];
 
+    private boolean hasTranslation, hasRotation, hasScale;
     private Vector3D translation, rotation, scale;
 
     public Transformation(Entity entity) {
@@ -26,32 +27,61 @@ public class Transformation extends Component {
         rotation = new Vector3D(1f, 1f, 1f);
         scale = new Vector3D(1f, 1f, 1f);
         Matrix.setIdentityM(modelMatrix, 0);
+
+        hasTranslation = true;
+        hasRotation = true;
+        hasScale = true;
     }
+
+    public Transformation() {
+        super();
+        translation = new Vector3D(0f, 0f, 0f);
+        rotation = new Vector3D(1f, 1f, 1f);
+        scale = new Vector3D(1f, 1f, 1f);
+        Matrix.setIdentityM(modelMatrix, 0);
+
+        hasTranslation = true;
+        hasRotation = true;
+        hasScale = true;
+    }
+
 
     /**
      * Criação da modelMatrix
-     * TODO: Uma possível otimização seria booleanas para ignorar a reutilizar a model caso algum dos 3 vetores (translacao, rotacao e escala) não sejam alterados
      *
-     * @param engine   (Não usado)
-     * @param viewProj referencia da view (NÃO USADO)
+     * @param engine (Não usado)
      */
     @Override
-    public void run(GameEngine engine, float[] viewProj) {
+    public void run(GameEngine engine) {
 
-        Matrix.setIdentityM(modelMatrix, 0);
+        if (hasTranslation || hasRotation || hasScale) {
 
-        Matrix.setIdentityM(translationMatrix, 0);
-        Matrix.translateM(translationMatrix, 0, translation.xyz[0], translation.xyz[1], translation.xyz[2]);
+            Matrix.setIdentityM(modelMatrix, 0);
 
-        Matrix.setIdentityM(rotationMatrix, 0);
-        Matrix.setRotateEulerM(rotationMatrix, 0, rotation.xyz[0], rotation.xyz[1], rotation.xyz[2]);
+            if (hasTranslation) {
+                Matrix.setIdentityM(translationMatrix, 0);
+                Matrix.translateM(translationMatrix, 0, translation.xyz[0], translation.xyz[1], translation.xyz[2]);
+                hasTranslation = false;
+            }
 
-        Matrix.setIdentityM(scaleMatrix, 0);
-        Matrix.scaleM(scaleMatrix, 0, scale.xyz[0], scale.xyz[1], scale.xyz[2]);
+            if (hasRotation) {
+                Matrix.setIdentityM(rotationMatrix, 0);
+                Matrix.rotateM(rotationMatrix, 0, rotation.xyz[0], 1, 0, 0);
+                Matrix.rotateM(rotationMatrix, 0, rotation.xyz[1], 0, 1, 0);
+                Matrix.rotateM(rotationMatrix, 0, rotation.xyz[2], 0, 0, 1);
+                hasRotation = false;
+            }
 
-        float[] rotScaleMatrix = new float[16];
-        Matrix.multiplyMM(rotScaleMatrix, 0, rotationMatrix, 0, scaleMatrix, 0);
-        Matrix.multiplyMM(modelMatrix, 0, translationMatrix, 0, rotScaleMatrix, 0);
+            if (hasScale) {
+                Matrix.setIdentityM(scaleMatrix, 0);
+                Matrix.scaleM(scaleMatrix, 0, scale.xyz[0], scale.xyz[1], scale.xyz[2]);
+                hasScale = false;
+            }
+
+            float[] rotScaleMatrix = new float[16];
+            Matrix.multiplyMM(rotScaleMatrix, 0, rotationMatrix, 0, scaleMatrix, 0);
+            Matrix.multiplyMM(modelMatrix, 0, translationMatrix, 0, rotScaleMatrix, 0);
+        }
     }
 
     public Vector3D getTranslation() {
@@ -59,7 +89,14 @@ public class Transformation extends Component {
     }
 
     public void setTranslation(Vector3D translation) {
+        this.hasTranslation = true;
         this.translation = new Vector3D(translation);
+    }
+
+
+    public void setTranslation(float x, float y, float z) {
+        this.hasTranslation = true;
+        this.translation = new Vector3D(x, y, z);
     }
 
     public Vector3D getRotation() {
@@ -67,6 +104,8 @@ public class Transformation extends Component {
     }
 
     public void setRotation(Vector3D rotation) {
+        this.hasRotation = true;
+
         //rotation never explode float max/min value
         for (int i = 0; i < rotation.xyz.length; i++) {
             if (rotation.xyz[i] >= 0) {
@@ -80,17 +119,21 @@ public class Transformation extends Component {
 
     }
 
+    public void setRotation(float x, float y, float z) {
+        setRotation(new Vector3D(x, y, z));
+    }
+
     public Vector3D getScale() {
         return scale;
     }
 
     public void setScale(Vector3D scale) {
+        this.hasScale = true;
         this.scale = new Vector3D(scale);
     }
 
-    public float[] getModelMatrix() {
-        return modelMatrix;
+    public void setScale(float x, float y, float z) {
+        this.hasScale = true;
+        this.scale = new Vector3D(x, y, z);
     }
-
-
 }

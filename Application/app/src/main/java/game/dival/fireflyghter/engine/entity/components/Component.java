@@ -8,11 +8,16 @@ import game.dival.fireflyghter.engine.entity.Entity;
  */
 public abstract class Component {
 
-    final protected Entity parentEntity;
+    public Entity parentEntity;
 
     public Component(Entity entity) {
         this.parentEntity = entity;
     }
 
-    public abstract void run(GameEngine engine, float[] mMVPMatrix);
+    public Component() {
+    }
+
+    ;
+
+    public abstract void run(GameEngine engine);
 }

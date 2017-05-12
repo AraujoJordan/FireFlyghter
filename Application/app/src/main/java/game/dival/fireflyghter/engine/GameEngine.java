@@ -15,6 +15,7 @@ import game.dival.fireflyghter.engine.renderer.GLESRenderer;
 
 /**
  * Created by arauj on 24/02/2017.
+ * DEPRECATED
  */
 public class GameEngine {
 
@@ -111,14 +112,14 @@ public class GameEngine {
         for (Entity entity : entities) {
 
             //ONE THREAD
-            entity.run(this, mMVPMatrix);
+            entity.run(this);
 
             //ASYNC
 //            new RunComponentsAsync(this,mMVPMatrix).execute(entity);
-//            entity.getModel3D().run(this,mMVPMatrix);
+//            entity.getModel3D().draw(this,mMVPMatrix);
         }
 //        for (Component camComp : camera.components)
-//            camComp.run(this,mMVPMatrix);
+//            camComp.draw(this,mMVPMatrix);
     }
 
     public void addCamera(Camera camera) {
@@ -144,7 +145,7 @@ public class GameEngine {
 //        protected Entity doInBackground(Entity... ent) {
 //            for (Component component : ent[0].components)
 //                if (!(component instanceof Model3D))
-//                    component.run(engine, mvp);
+//                    component.draw(engine, mvp);
 //            return ent[0];
 //        }
 //    }

@@ -4,7 +4,6 @@ import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
 import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
-import game.dival.fireflyghter.engine.math.Vector3D;
 
 /**
  * Created by araujojordan on 08/05/17.
@@ -23,9 +22,9 @@ public class RandomElements {
     public static void addRandomPines(int numerOfPines, int distance, GameEngine engine) {
         for (int i = 0; i <= numerOfPines; i++) {
             Entity pine = new Entity("pine" + i); // Create PINE
-            Transformation transformation = new Transformation(pine);
-            transformation.setTranslation(new Vector3D((float) randDouble(-distance, distance), 0, (float) randDouble(-distance, distance)));
-            pine.addComponent(new Model3D(pine, "pine", engine));
+            Transformation transformation = new Transformation();
+            transformation.setTranslation((float) randDouble(-distance, distance), 0, (float) randDouble(-distance, distance));
+            pine.addComponent(new Model3D("pine", engine));
             pine.addComponent(transformation); //add translation, scale, rotation
             engine.entities.add(pine);
         }

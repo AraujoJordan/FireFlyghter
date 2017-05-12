@@ -1,5 +1,7 @@
 package game.dival.fireflyghter.engine.math;
 
+import java.util.Arrays;
+
 /**
  * Created by arauj on 24/02/2017.
  */
@@ -101,4 +103,8 @@ public class Vector3D {
         xyz[2] = z;
     }
 
+    @Override
+    public String toString() {
+        return Arrays.toString(xyz);
+    }
 }

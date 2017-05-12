@@ -5,6 +5,9 @@ import android.view.View;
 
 import game.dival.fireflyghter.engine.entity.Camera;
 import game.dival.fireflyghter.engine.entity.Entity;
+import game.dival.fireflyghter.engine.entity.components.Component;
+import game.dival.fireflyghter.engine.entity.components.Transformation;
+import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 
 
 /**
@@ -74,23 +77,33 @@ public class VREngine extends GameEngine {
     }
 
     /**
-     * It will update MOVEMENT, PHYSICS, COLLISIONS of all entities
-     *
-     * @param mMVPMatrix
+     * Update the engine components (like physics, boxColisor, etc)
+     * This will not draw anything on screen
      */
-    public void engineUpdates(float[] mMVPMatrix) {
+    public void engineUpdates() {
         updates.gameFrame();
         for (Entity entity : entities) {
-
-            //ONE THREAD
-            entity.run(this, mMVPMatrix);
+            for (Component component : entity.getComponents())
+                if (!(component instanceof Transformation) || !(component instanceof Model3D))
+                    entity.run(this);
 
             //ASYNC
 //            new RunComponentsAsync(this,mMVPMatrix).execute(entity);
-//            entity.getModel3D().run(this,mMVPMatrix);
+//            entity.getModel3D().draw(this,mMVPMatrix);
         }
-//        for (Component camComp : camera.components)
-//            camComp.run(this,mMVPMatrix);
+    }
+
+    public void draw() {
+        for (Entity entity : entities) {
+            if (entity.getTransformation() != null)
+                entity.run(this);
+            if (entity.getModel3D() != null)
+                entity.run(this);
+
+            //ASYNC
+//            new RunComponentsAsync(this,mMVPMatrix).execute(entity);
+//            entity.getModel3D().draw(this,mMVPMatrix);
+        }
     }
 
     public void addCamera(Camera camera) {
@@ -113,7 +126,7 @@ public class VREngine extends GameEngine {
 //        protected Entity doInBackground(Entity... ent) {
 //            for (Component component : ent[0].components)
 //                if (!(component instanceof Model3D))
-//                    component.run(engine, mvp);
+//                    component.draw(engine, mvp);
 //            return ent[0];
 //        }
 //    }

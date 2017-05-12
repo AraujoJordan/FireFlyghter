@@ -14,7 +14,7 @@ import game.dival.fireflyghter.engine.math.Vector3D;
 
 /**
  * Created by arauj on 24/02/2017.
- * Here it will be load image and sound resources of the game, this will run on the begin,
+ * Here it will be load image and sound resources of the game, this will draw on the begin,
  * so it will not slow down the performance on the runtime
  */
 public class GameResources {
@@ -136,7 +136,7 @@ public class GameResources {
                     Vector3D normal = new Vector3D(
                             Float.valueOf(tokens[1]),
                             Float.valueOf(tokens[2]),
-                            Float.valueOf(tokens[2]));
+                            Float.valueOf(tokens[3]));
                     vnormals.add(normal);
 //                    Log.d("VerticeNormal",""+tokens[1]+" "+ tokens[2]+" "+tokens[3]);
                 }

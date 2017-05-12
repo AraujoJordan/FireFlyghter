@@ -4,18 +4,23 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
+import game.dival.fireflyghter.R;
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.VREngine;
 import game.dival.fireflyghter.engine.VrActivity;
 import game.dival.fireflyghter.engine.draw.Color;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.math.Vector3D;
-import game.dival.fireflyghter.engine.renderer.Shaders;
+import game.dival.fireflyghter.engine.renderer.GLUtils;
 
 /**
  * Created by arauj on 23/03/2017.
@@ -49,6 +54,7 @@ public class ModelDrawVR implements Draw {
      */
     public ModelDrawVR(ArrayList<Vector3D> pixels, ArrayList<Vector3D> normals, GameEngine engine, Entity entity) {
         this.entity = entity;
+        this.engine = (VREngine) engine;
 
         float[] vertCoords = new float[pixels.size() * 3];
         int index = 0;
@@ -57,13 +63,15 @@ public class ModelDrawVR implements Draw {
             vertCoords[index++] = vert.xyz[1];
             vertCoords[index++] = vert.xyz[2];
         }
-        float[] normalCoords = new float[normals.size() * 3];
+
+        float[] normalCoords = new float[normals.size() * 4];
         index = 0;
         for (Vector3D normal : normals) {
             normalCoords[index++] = normal.xyz[0];
             normalCoords[index++] = normal.xyz[1];
             normalCoords[index++] = normal.xyz[2];
         }
+        normalCoords[index++] = 0.5f;
         float[] colorCoords = new float[pixels.size() * 4];
         index = 0;
         for (int i = 0; i < pixels.size(); i++) {
@@ -78,24 +86,24 @@ public class ModelDrawVR implements Draw {
         bbVertices.order(ByteOrder.nativeOrder());
         vertexBuffer = bbVertices.asFloatBuffer();
         vertexBuffer.put(vertCoords);
-        vertexBuffer.position(0);
+        vertexBuffer.flip();
 
         ByteBuffer bbNormals = ByteBuffer.allocateDirect(normalCoords.length * 4);
         bbNormals.order(ByteOrder.nativeOrder());
         normalBuffer = bbNormals.asFloatBuffer();
         normalBuffer.put(normalCoords);
-        normalBuffer.position(0);
+        normalBuffer.flip();
 
         ByteBuffer bbColors = ByteBuffer.allocateDirect(colorCoords.length * 4);
         bbColors.order(ByteOrder.nativeOrder());
         colorBuffer = bbColors.asFloatBuffer();
         colorBuffer.put(colorCoords);
-        colorBuffer.position(0);
+        colorBuffer.flip();
 
         // prepare shaders and OpenGL program
-        int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, "light_vertex");
+        int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, R.raw.light_vertex);
 //        int gridShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, "grid_fragment"); //NOT USED
-        int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, "passthrough_fragment");
+        int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.passthrough_fragment);
 
         mProgram = GLES20.glCreateProgram();
         GLES20.glAttachShader(mProgram, vertexShader);
@@ -112,18 +120,16 @@ public class ModelDrawVR implements Draw {
         modelModelViewProjectionParam = GLES20.glGetUniformLocation(mProgram, "u_MVP");
         modelLightPosParam = GLES20.glGetUniformLocation(mProgram, "u_LightPos");
 
-        this.engine = (VREngine) engine;
+
     }
 
     /**
      * Encapsulates the OpenGL ES instructions for drawing the triangle.
      *
-     * @param t - The ProjectionView matrix in which to draw
-     *                  this shape.
      */
-    public void run(float[] t) {
+    public void draw() {
 
-        //Calculate mvp
+        //Calculate mvp for this object
         float[] modelViewProjMatrix = new float[16];
         Matrix.multiplyMM(modelViewProjMatrix, 0, VrActivity.mProjectionViewMatrix, 0, entity.getTransformation().modelMatrix, 0);
 
@@ -163,61 +169,58 @@ public class ModelDrawVR implements Draw {
         GLES20.glDisableVertexAttribArray(modelNormalParam);
         GLES20.glDisableVertexAttribArray(modelColorParam);
 
-        VrActivity.checkGlError("Drawing model");
+        GLUtils.checkGlError("Drawing model");
     }
 
     public void setColor(Color color) {
         this.color = color.getFloatRGBA();
     }
 
+
     /**
      * Converts a raw text file, saved as a resource, into an OpenGL ES shader.
      *
-     * @param type  The type of shader we will be creating.
+     * @param type The type of shader we will be creating.
      * @param resId The resource ID of the raw text file about to be turned into a shader.
      * @return The shader object handler.
      */
-    public int loadGLShader(int type, String resId) {
+    private int loadGLShader(int type, int resId) {
 
+        String code = "";
+
+        InputStream inputStream = engine.vrAct.getResources().openRawResource(resId);
         try {
-            String code = "";
-            switch (resId) {
-                case "grid_fragment_shader": {
-                    code = Shaders.grid_fragment_shader;
-                    break;
-                }
-                case "light_vertex": {
-                    code = Shaders.light_vertex;
-                    break;
-                }
-                case "passthrough_fragment": {
-                    code = Shaders.passthrough_fragment;
-                    break;
-                }
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
             }
-            int shader = GLES20.glCreateShader(type);
-            GLES20.glShaderSource(shader, code);
-            GLES20.glCompileShader(shader);
-
-            // Get the compilation status.
-            final int[] compileStatus = new int[1];
-            GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
-
-            // If the compilation failed, delete the shader.
-            if (compileStatus[0] == 0) {
-                Log.e(getClass().getSimpleName(), "Error compiling shader: " + GLES20.glGetShaderInfoLog(shader));
-                GLES20.glDeleteShader(shader);
-                shader = 0;
-            }
-
-            if (shader == 0) {
-                throw new RuntimeException("Error creating shader.");
-            }
-            return shader;
-
-        } catch (Exception e) {
+            code = sb.toString();
+            reader.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return 0;
+
+        int shader = GLES20.glCreateShader(type);
+        GLES20.glShaderSource(shader, code);
+        GLES20.glCompileShader(shader);
+
+        // Get the compilation status.
+        final int[] compileStatus = new int[1];
+        GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
+
+        // If the compilation failed, delete the shader.
+        if (compileStatus[0] == 0) {
+            Log.e(getClass().getSimpleName(), "Error compiling shader: " + GLES20.glGetShaderInfoLog(shader));
+            GLES20.glDeleteShader(shader);
+            shader = 0;
+        }
+
+        if (shader == 0) {
+            throw new RuntimeException("Error creating shader.");
+        }
+
+        return shader;
     }
 }

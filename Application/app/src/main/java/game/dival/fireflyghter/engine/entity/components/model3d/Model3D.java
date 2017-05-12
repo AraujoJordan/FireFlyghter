@@ -29,6 +29,24 @@ public class Model3D extends Component {
 
     private GameEngine engine;
 
+    public Model3D(String resourceLabel, GameEngine engine) {
+        super();
+
+        GameResources.Object3D obj3D = engine.resouces.get3DModel(resourceLabel);
+
+        tempTriangles = new ArrayList<>();
+        tempNormalMap = new ArrayList<>();
+        for (Vector3D[] triplePixel : obj3D.faces)
+            tempTriangles.add(triplePixel);
+        for (Vector3D vnormal : obj3D.vnormals)
+            tempNormalMap.add(vnormal);
+        this.width = obj3D.getWidth();
+        this.height = obj3D.getHeight();
+        this.depth = obj3D.getDepth();
+        this.centerOfModel = obj3D.center;
+        this.engine = engine;
+    }
+
     public Model3D(Entity entity, String resourceLabel, GameEngine engine) {
         super(entity);
 
@@ -66,7 +84,7 @@ public class Model3D extends Component {
     }
 
     @Override
-    public void run(GameEngine engine, float[] mMVPMatrix) {
+    public void run(GameEngine engine) {
         if (tempTriangles != null) {
             initTriangles();
         }
@@ -75,14 +93,14 @@ public class Model3D extends Component {
         Transformation transformation;
         try {
             transformation = parentEntity.getTransformation();
-            shape.run(transformation.modelMatrix);
+            shape.draw();
             return;
         } catch (NullPointerException noTrans) {
             Log.e("NullPointerException", noTrans.getMessage());
         }
 
         //RUN WITHOUT TRANSFORMATION
-        shape.run(mMVPMatrix);
+        shape.draw();
     }
 
 

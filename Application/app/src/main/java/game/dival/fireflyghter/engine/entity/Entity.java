@@ -16,7 +16,7 @@ import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 
 public class Entity {
     public final String label;
-    public List<Component> components;
+    private List<Component> components;
 
     // COMPONENTS REFERENCE FOR OPTIMIZATION
     private Transformation transformation;
@@ -34,6 +34,15 @@ public class Entity {
         components = new ArrayList<>();
     }
 
+    public List<Component> getComponents() {
+        return components;
+    }
+
+    /**
+     * Use an cache to delivery the component
+     *
+     * @return the component on cache
+     */
     public Transformation getTransformation() {
         if (transformation != null)
             return transformation;
@@ -43,9 +52,13 @@ public class Entity {
                 return transformation;
             }
         }
-        throw new NullPointerException(label + ": Does'nt have Transformation component!");
+        return null;
     }
 
+    /**
+     * Use an cache to delivery the component
+     * @return the component on cache
+     */
     public Model3D getModel3D() {
         if (model3D != null)
             return model3D;
@@ -55,9 +68,13 @@ public class Entity {
                 return model3D;
             }
         }
-        throw new NullPointerException(label + ": Does'nt have Model3D component!");
+        return null;
     }
 
+    /**
+     * Use an cache to delivery the component
+     * @return the component on cache
+     */
     public BoxCollision getBoxCollision() {
         if (boxCollision != null)
             return boxCollision;
@@ -67,9 +84,13 @@ public class Entity {
                 return boxCollision;
             }
         }
-        throw new NullPointerException(label + ": Does'nt have BoxCollision component!");
+        return null;
     }
 
+    /**
+     * Use an cache to delivery the component
+     * @return the component on cache
+     */
     public Physics getPhysics() {
         if (physics != null)
             return physics;
@@ -79,7 +100,7 @@ public class Entity {
                 return physics;
             }
         }
-        throw new NullPointerException(label + ": Does'nt have Physics component!");
+        return null;
     }
 
     /**
@@ -102,22 +123,25 @@ public class Entity {
         components.remove(removeMe);
     }
 
-    public void run(GameEngine engine, float[] mvp) {
+    public void run(GameEngine engine) {
         for (Component component : components)
-            component.run(engine, mvp);
+            component.run(engine);
     }
 
-    public void addComponent(Component addMe) {
-        if (addMe instanceof Transformation)
-            transformation = (Transformation) addMe;
-        if (addMe instanceof Model3D)
-            model3D = (Model3D) addMe;
-        if (addMe instanceof BoxCollision)
-            boxCollision = (BoxCollision) addMe;
-        if (addMe instanceof Physics)
-            physics = (Physics) addMe;
+    public void addComponent(Component component) {
+        if (component.parentEntity == null)
+            component.parentEntity = this;
 
-        components.add(addMe);
+        if (component instanceof Transformation)
+            transformation = (Transformation) component;
+        if (component instanceof Model3D)
+            model3D = (Model3D) component;
+        if (component instanceof BoxCollision)
+            boxCollision = (BoxCollision) component;
+        if (component instanceof Physics)
+            physics = (Physics) component;
+
+        components.add(component);
     }
 
 }

@@ -9,9 +9,6 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import game.dival.fireflyghter.engine.GameEngine;
-import game.dival.fireflyghter.engine.entity.Entity;
-import game.dival.fireflyghter.engine.entity.components.Component;
-import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 
 /**
  * Created by arauj on 13/03/2017.
@@ -73,10 +70,10 @@ public class GLESRenderer implements GLSurfaceView.Renderer {
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-        for (Entity entity : engine.entities)
-            for (Component component : entity.components)
-                if (component instanceof Model3D)
-                    ((Model3D) component).initTriangles();
+//        for (Entity entity : engine.entities)
+//            for (Component component : entity.components)
+//                if (component instanceof Model3D)
+//                    ((Model3D) component).initTriangles();
 
     }
 
@@ -94,7 +91,7 @@ public class GLESRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         engine.engineUpdates(mMVPMatrix);
-//        model3D.run(engine,mMVPMatrix);
+//        model3D.draw(engine,mMVPMatrix);
     }
 
     @Override

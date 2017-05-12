@@ -27,10 +27,19 @@ public class BoxCollision extends Collision {
     /**
      * Dynamic edge collision using parentEntity position and size
      *
-     * @param hasFixedPosition if true, it will run fast
+     * @param hasFixedPosition if true, it will draw fast
      */
     public BoxCollision(Entity parentEntity, boolean hasFixedPosition) {
         super(parentEntity);
+        edges = new Vector3D[6];
+        this.hasFixedPosition = hasFixedPosition;
+//        if (hasFixedPosition)
+//            updateBoxPosition();
+
+    }
+
+    public BoxCollision(boolean hasFixedPosition) {
+        super();
         edges = new Vector3D[6];
         this.hasFixedPosition = hasFixedPosition;
 //        if (hasFixedPosition)
@@ -76,7 +85,7 @@ public class BoxCollision extends Collision {
 //    }
 
     @Override
-    public void run(GameEngine engine, float[] mMVPMatrix) {
+    public void run(GameEngine engine) {
 //        if (!hasFixedPosition)
 //            updateBoxPosition();
 //        checkForCollision();

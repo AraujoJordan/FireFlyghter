@@ -35,7 +35,7 @@ public class FireParticles extends Entity {
         for (ParticleTriangle particle : triangles) {
             if (particle.isOver())
                 particle = new ParticleTriangle(this);
-            particle.run(engine, mvp);
+            particle.run(engine);
         }
     }
 
@@ -75,7 +75,7 @@ public class FireParticles extends Entity {
             return physics.inertiaVector.getY() < 0;
         }
 
-        public void run(GameEngine engine, float[] mvp) {
+        public void run(GameEngine engine) {
             double distanceYPercent = (1.0d - (getTransformation().getTranslation().getY()
                     - fireEmissor.getTransformation().getTranslation().getY()) /
                     (fireEmissor.getTransformation().getTranslation().getY() + FIRE_HEIGHT -
@@ -86,8 +86,8 @@ public class FireParticles extends Entity {
 
             getModel3D().setColor(new Color(rgbaf[0], rgbaf[1], rgbaf[2], rgbaf[3]));
 
-            for (Component component : this.components) {
-                component.run(gameEngine, mvp);
+            for (Component component : this.getComponents()) {
+                component.run(gameEngine);
             }
         }
     }

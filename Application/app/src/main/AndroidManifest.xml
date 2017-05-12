@@ -21,7 +21,6 @@
         android:name="android.hardware.vr.high_performance"
         android:required="false" />
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
