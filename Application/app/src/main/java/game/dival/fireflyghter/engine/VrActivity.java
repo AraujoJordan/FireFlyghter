@@ -26,11 +26,10 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
 
     private static final float Z_NEAR = 1f;
     private static final float Z_FAR = 1000f;
-    public static float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{-500.0f, 1f, 0.0f, 1.0f};
+    public float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{0f, 5f, 0.0f, 1.0f};
     public static float[] mViewMatrix = new float[16];
     public static float[] mProjectionViewMatrix = new float[16];
-    // We keep the light always position just above the user.
-    public float[] lightPosInEyeSpace = new float[16];
+    public static float[] mLightEyeMatrix = new float[16];
     private GvrView gvrView;
     private VREngine engine;
     private float[] camera = new float[16];
@@ -88,12 +87,7 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
 
         //MAKE LIGHT ROTATE THE SCREEN
         //-----------------------------------------------------------------------------------------
-        float R = 300f;
-        theta = theta + 0.005f;
-        float sunX = (float) (R * Math.cos(theta));
-        float sunZ = (float) (R * Math.sin(theta));
-        LIGHT_POS_IN_WORLD_SPACE = new float[]{sunX, 10f, sunZ, 1.0f};
-        Matrix.multiplyMV(lightPosInEyeSpace, 0, mViewMatrix, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
+        Matrix.multiplyMV(mLightEyeMatrix, 0, mViewMatrix, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
 
         //PROJECTION MATRIX CREATION
         float[] mProjectionMatrix = eye.getPerspective(Z_NEAR, Z_FAR);
@@ -142,6 +136,7 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
     protected void onPause() {
         engine.pause();
         super.onPause();
+        finish();
     }
 
     @Override
@@ -154,5 +149,6 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
     protected void onDestroy() {
         super.onDestroy();
         engine.finish();
+        finish();
     }
 }

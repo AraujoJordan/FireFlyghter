@@ -58,14 +58,44 @@ public class Vector3D {
     }
 
     /**
+     * Cross one vector to this vector (it can be a subtraction if is negative)
+     *
+     * @param v the vector to be add (or subtract)
+     */
+    public Vector3D cross(Vector3D v) {
+        Vector3D u = new Vector3D(this);
+        Vector3D uv = new Vector3D();
+        uv.xyz[0] = u.xyz[1] * v.xyz[2] - v.xyz[1] * u.xyz[2];
+        uv.xyz[1] = v.xyz[0] * u.xyz[2] - u.xyz[0] * v.xyz[2];
+        uv.xyz[2] = u.xyz[0] * v.xyz[1] - v.xyz[0] * u.xyz[1];
+        return uv;
+    }
+
+
+    /**
      * Add one vector to this vector (it can be a subtraction if is negative)
      *
      * @param vectorToAdd the vector to be add (or subtract)
      */
-    public void add(Vector3D vectorToAdd) {
-        xyz[0] += vectorToAdd.xyz[0];
-        xyz[1] += vectorToAdd.xyz[1];
-        xyz[2] += vectorToAdd.xyz[2];
+    public Vector3D add(Vector3D vectorToAdd) {
+        Vector3D newVector = new Vector3D(this);
+        newVector.xyz[0] += vectorToAdd.xyz[0];
+        newVector.xyz[1] += vectorToAdd.xyz[1];
+        newVector.xyz[2] += vectorToAdd.xyz[2];
+        return newVector;
+    }
+
+    /**
+     * Sub one vector to this vector (it can be a subtraction if is negative)
+     *
+     * @param vectorToSub the vector to be add (or subtract)
+     */
+    public Vector3D sub(Vector3D vectorToSub) {
+        Vector3D newVector = new Vector3D(this);
+        newVector.xyz[0] -= vectorToSub.xyz[0];
+        newVector.xyz[1] -= vectorToSub.xyz[1];
+        newVector.xyz[2] -= vectorToSub.xyz[2];
+        return newVector;
     }
 
     /**
@@ -73,10 +103,12 @@ public class Vector3D {
      *
      * @param scalar the scalar to multiply the vector
      */
-    public void scalarMultiply(float scalar) {
-        xyz[0] *= scalar;
-        xyz[1] *= scalar;
-        xyz[2] *= scalar;
+    public Vector3D scalarMultiply(float scalar) {
+        Vector3D newVector = new Vector3D(this);
+        newVector.xyz[0] *= scalar;
+        newVector.xyz[1] *= scalar;
+        newVector.xyz[2] *= scalar;
+        return newVector;
     }
 
     public float getX() {

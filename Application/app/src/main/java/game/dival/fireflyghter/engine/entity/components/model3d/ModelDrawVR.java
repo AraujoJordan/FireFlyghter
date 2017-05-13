@@ -56,6 +56,8 @@ public class ModelDrawVR implements Draw {
         this.entity = entity;
         this.engine = (VREngine) engine;
 
+
+        //VERTS
         float[] vertCoords = new float[pixels.size() * 3];
         int index = 0;
         for (Vector3D vert : pixels) {
@@ -64,14 +66,34 @@ public class ModelDrawVR implements Draw {
             vertCoords[index++] = vert.xyz[2];
         }
 
-        float[] normalCoords = new float[normals.size() * 4];
-        index = 0;
-        for (Vector3D normal : normals) {
-            normalCoords[index++] = normal.xyz[0];
-            normalCoords[index++] = normal.xyz[1];
-            normalCoords[index++] = normal.xyz[2];
+
+        //NORMAL
+        float[] normalCoords = new float[vertCoords.length];
+        int j = 0;
+        for (int face = 0; face < pixels.size(); face += 3) {
+            Vector3D v1 = pixels.get(face);
+            Vector3D v2 = pixels.get(face + 1);
+            Vector3D v3 = pixels.get(face + 2);
+
+            Vector3D vu = v3.sub(v1);
+            Vector3D vt = v2.sub(v1);
+
+            Vector3D normal = vt.cross(vu);
+            normal.normalize();
+
+            normalCoords[j++] = normal.getX();
+            normalCoords[j++] = normal.getY();
+            normalCoords[j++] = normal.getZ();
+            normalCoords[j++] = normal.getX();
+            normalCoords[j++] = normal.getY();
+            normalCoords[j++] = normal.getZ();
+            normalCoords[j++] = normal.getX();
+            normalCoords[j++] = normal.getY();
+            normalCoords[j++] = normal.getZ();
         }
-        normalCoords[index++] = 0.5f;
+
+
+        //COLOR
         float[] colorCoords = new float[pixels.size() * 4];
         index = 0;
         for (int i = 0; i < pixels.size(); i++) {
@@ -101,9 +123,8 @@ public class ModelDrawVR implements Draw {
         colorBuffer.flip();
 
         // prepare shaders and OpenGL program
-        int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, R.raw.light_vertex);
-//        int gridShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, "grid_fragment"); //NOT USED
-        int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.passthrough_fragment);
+        int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, R.raw.vertex_shader);
+        int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.fragment_shader);
 
         mProgram = GLES20.glCreateProgram();
         GLES20.glAttachShader(mProgram, vertexShader);
@@ -125,7 +146,6 @@ public class ModelDrawVR implements Draw {
 
     /**
      * Encapsulates the OpenGL ES instructions for drawing the triangle.
-     *
      */
     public void draw() {
 
@@ -135,16 +155,16 @@ public class ModelDrawVR implements Draw {
 
         GLES20.glUseProgram(mProgram);
 
-        GLES20.glUniform3fv(modelLightPosParam, 1, engine.getActivity().lightPosInEyeSpace, 0);
+        GLES20.glUniform3fv(modelLightPosParam, 1, engine.getActivity().mLightEyeMatrix, 0);
 
         // Set the Model in the shader, used to calculate lighting
         GLES20.glUniformMatrix4fv(modelModelParam, 1, false, entity.getTransformation().modelMatrix, 0);
 
-        float[] modelViewMatrix = new float[16];
-        Matrix.multiplyMM(modelViewMatrix, 0, VrActivity.mViewMatrix, 0, entity.getTransformation().modelMatrix, 0);
+        float[] modelView = new float[16];
+        Matrix.multiplyMM(modelView, 0, VrActivity.mViewMatrix, 0, entity.getTransformation().modelMatrix, 0);
 
         // Set the ModelView in the shader, used to calculate lighting
-        GLES20.glUniformMatrix4fv(modelModelViewParam, 1, false, modelViewMatrix, 0);
+        GLES20.glUniformMatrix4fv(modelModelViewParam, 1, false, modelView, 0);
 
         // Set the position of the model
         GLES20.glVertexAttribPointer(
@@ -180,7 +200,7 @@ public class ModelDrawVR implements Draw {
     /**
      * Converts a raw text file, saved as a resource, into an OpenGL ES shader.
      *
-     * @param type The type of shader we will be creating.
+     * @param type  The type of shader we will be creating.
      * @param resId The resource ID of the raw text file about to be turned into a shader.
      * @return The shader object handler.
      */
