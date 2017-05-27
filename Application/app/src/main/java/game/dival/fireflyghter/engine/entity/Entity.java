@@ -9,6 +9,7 @@ import game.dival.fireflyghter.engine.entity.components.Component;
 import game.dival.fireflyghter.engine.entity.components.Physics;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
 import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
+import game.dival.fireflyghter.engine.math.Vector3D;
 
 /**
  * Created by arauj on 05/03/2017.
@@ -144,4 +145,9 @@ public class Entity {
         components.add(component);
     }
 
+    public void updateCoordinates(Transformation cameraTransformation, Vector3D lookAt) {
+        Vector3D translation = cameraTransformation.getTranslation();
+        this.transformation.setTranslation(translation.xyz[0], translation.xyz[1] - 2f, translation.xyz[2] - 2f);
+        this.transformation.setRotation(cameraTransformation.getRotation());
+    }
 }

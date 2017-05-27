@@ -36,6 +36,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         resources.addOBJ(this, "cube", "cube.obj");
         resources.addOBJ(this, "plane", "plane.obj");
         resources.addOBJ(this, "cloud", "cloudsmooth.obj");
+        resources.addOBJ(this, "bird", "bird2.obj");
 
         gameEngine = new VREngine(this, resources, this);
 
@@ -50,6 +51,14 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         sphere.addComponent(new Model3D("cloud", gameEngine));
         gameEngine.entities.add(sphere);
 
+        Entity bird = new Entity("bird");
+        Transformation birdTransformation = new Transformation();
+        birdTransformation.setTranslation(0, 5f, -6);
+        birdTransformation.setScale(1f, 1f, -1f);
+        bird.addComponent(birdTransformation);
+        bird.addComponent(new Model3D("bird", gameEngine));
+        gameEngine.entities.add(bird);
+
         Entity floor = new Entity("floor");
         floorTrans = new Transformation();
         floorTrans.setTranslation(0, 0, 0);
@@ -60,7 +69,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
 
         RandomElements.addRandomPines(100, 30, gameEngine);
 
-//        camera.followEntity(sphere);
+        camera.updateEntity(bird);
 
     }
 

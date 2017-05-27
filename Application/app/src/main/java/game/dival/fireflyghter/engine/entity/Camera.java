@@ -14,7 +14,7 @@ import game.dival.fireflyghter.engine.math.Vector3D;
 public class Camera extends Entity {
 
     private final float CAMERA_DISTANCE = 0.01f;
-    private Transformation followTransformation = null;
+    private Entity updateEntity = null;
     private HeadTransform headTransform;
     private float[] cameraMatrix = new float[16];
 
@@ -31,18 +31,10 @@ public class Camera extends Entity {
     }
 
     public float[] updateCamera(HeadTransform headTransform) {
+        this.headTransform = headTransform;
 
         Transformation camTransformation = getTransformation();
         Vector3D camTranslation = camTransformation.getTranslation();
-        this.headTransform = headTransform;
-
-        if (followTransformation != null) {
-            Vector3D followTrans = followTransformation.getTranslation();
-            getTransformation().setTranslation(followTrans.xyz[0], followTrans.xyz[1], followTrans.xyz[2] - CAMERA_DISTANCE);
-        }
-
-        camTransformation = getTransformation();
-        camTranslation = camTransformation.getTranslation();
 
         //update camera vector
         Matrix.setLookAtM(cameraMatrix, 0,
@@ -50,10 +42,13 @@ public class Camera extends Entity {
                 camTranslation.xyz[0], camTranslation.xyz[1], camTranslation.xyz[2],
                 0, 1, 0);
 
+        if (updateEntity != null) {
+            updateEntity.updateCoordinates(this.getTransformation(), this.getLookDirection());
+        }
         return cameraMatrix;
     }
 
-    public void followEntity(Entity entity) {
-        followTransformation = entity.getTransformation();
+    public void updateEntity(Entity entity) {
+        this.updateEntity = entity;
     }
 }
