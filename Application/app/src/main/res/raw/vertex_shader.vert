@@ -21,7 +21,7 @@ void main()
         vec4 difuseColor = a_Color * diffuse;
         difuseColor.a = 1.0;
 
-        vec4 ambientColor = vec4(0.07f,0.07f,0.07f,1.0f);
+        vec4 ambientColor = vec4(0.07,0.07,0.07,1.0);
 
         v_Color = ambientColor+difuseColor;
 
