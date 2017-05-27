@@ -1,6 +1,7 @@
 package game.dival.fireflyghter.engine;
 
 import android.app.Activity;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,8 +34,8 @@ public class GameResources {
             throw new RuntimeException("Can't create a 3d object now, create before");
         try {
             object3dList.put(idLabel, new Object3D(act.getAssets().open(fileName)));
-        } catch (IOException error) {
-            throw new RuntimeException("Can't create a 3d object, file exists? \n" + error.getMessage());
+        } catch (Exception error) {
+            Log.e(getClass().getSimpleName(),"Can't create a 3d object" + error.getMessage());
         }
     }
 
@@ -60,6 +61,7 @@ public class GameResources {
             vertexs = new ArrayList<>();
             faces = new ArrayList<>();
             vnormals = new ArrayList<>();
+            ArrayList<Vector3D> tempNormals = new ArrayList<>();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
             String line;
@@ -137,7 +139,7 @@ public class GameResources {
                             Float.valueOf(tokens[1]),
                             Float.valueOf(tokens[2]),
                             Float.valueOf(tokens[3]));
-                    vnormals.add(normal);
+                    tempNormals.add(normal);
 //                    Log.d("VerticeNormal",""+tokens[1]+" "+ tokens[2]+" "+tokens[3]);
                 }
 
@@ -158,6 +160,7 @@ public class GameResources {
                         String[] faceValues = tokens[i + 1].split("//");
                         int vertexIndex = Integer.parseInt(faceValues[0]);
                         face[i] = vertexs.get(vertexIndex - 1); //the list begin with 0, different from the obj index
+                        vnormals.add(tempNormals.get(vertexIndex - 1));
 //                        Log.d("Pixel " + vertexIndex, " x:" + face[i].xyz[0] + " y:" + face[i].xyz[1] + " z:" + face[i].xyz[2]);
                     }
                     faces.add(face);

@@ -25,7 +25,7 @@ public class Model3D extends Component {
     private ModelDrawVR shape;
 
     private ArrayList<Vector3D[]> tempTriangles;
-    private ArrayList<Vector3D> tempNormalMap;
+    private ArrayList<Vector3D> normals;
 
     private GameEngine engine;
 
@@ -35,11 +35,9 @@ public class Model3D extends Component {
         GameResources.Object3D obj3D = engine.resouces.get3DModel(resourceLabel);
 
         tempTriangles = new ArrayList<>();
-        tempNormalMap = new ArrayList<>();
-        for (Vector3D[] triplePixel : obj3D.faces)
-            tempTriangles.add(triplePixel);
-        for (Vector3D vnormal : obj3D.vnormals)
-            tempNormalMap.add(vnormal);
+        normals = new ArrayList<>();
+        tempTriangles.addAll(obj3D.faces);
+        normals.addAll(obj3D.vnormals);
         this.width = obj3D.getWidth();
         this.height = obj3D.getHeight();
         this.depth = obj3D.getDepth();
@@ -53,11 +51,11 @@ public class Model3D extends Component {
         GameResources.Object3D obj3D = engine.resouces.get3DModel(resourceLabel);
 
         tempTriangles = new ArrayList<>();
-        tempNormalMap = new ArrayList<>();
+        normals = new ArrayList<>();
         for (Vector3D[] triplePixel : obj3D.faces)
             tempTriangles.add(triplePixel);
         for (Vector3D vnormal : obj3D.vnormals)
-            tempNormalMap.add(vnormal);
+            normals.add(vnormal);
         this.width = obj3D.getWidth();
         this.height = obj3D.getHeight();
         this.depth = obj3D.getDepth();
@@ -120,14 +118,14 @@ public class Model3D extends Component {
             vert.add(triplePixel[1]);
             vert.add(triplePixel[2]);
         }
-        shape = new ModelDrawVR(vert, tempNormalMap, engine, parentEntity);
+        shape = new ModelDrawVR(vert, normals, engine, parentEntity);
 
         vert.clear();
         vert = null;
         tempTriangles.clear();
         tempTriangles = null;
-        tempNormalMap.clear();
-        tempNormalMap = null;
+        normals.clear();
+        normals = null;
     }
 
     public void setColor(Color color) {

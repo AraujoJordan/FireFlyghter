@@ -1,6 +1,6 @@
 package game.dival.fireflyghter.engine.entity.components.model3d;
 
-import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.opengl.Matrix;
 import android.util.Log;
 
@@ -29,9 +29,11 @@ import game.dival.fireflyghter.engine.renderer.GLUtils;
 public class ModelDrawVR implements Draw {
 
     private static final int COORDS_PER_VERTEX = 3; // number of coordinates per vertex in this array
+
     private final FloatBuffer vertexBuffer;
     private final FloatBuffer normalBuffer;
     private final FloatBuffer colorBuffer;
+
     private final int mProgram;
     private final int modelPositionParam;
     private final int modelNormalParam;
@@ -41,7 +43,7 @@ public class ModelDrawVR implements Draw {
     private final int modelModelViewProjectionParam;
     private final int modelLightPosParam;
 
-    private float color[] = {0.5f, 0.5f, 0.5f, 1.0f};
+    private float color[] = {0.1f, 0.6f, 0.1f, 1.0f};
     private int vertexCount;
 
     private Entity entity;
@@ -52,7 +54,7 @@ public class ModelDrawVR implements Draw {
      *
      * @param pixels
      */
-    public ModelDrawVR(ArrayList<Vector3D> pixels, ArrayList<Vector3D> normals, GameEngine engine, Entity entity) {
+    public ModelDrawVR(ArrayList<Vector3D> pixels, ArrayList<Vector3D> normal, GameEngine engine, Entity entity) {
         this.entity = entity;
         this.engine = (VREngine) engine;
 
@@ -69,28 +71,74 @@ public class ModelDrawVR implements Draw {
 
         //NORMAL
         float[] normalCoords = new float[vertCoords.length];
-        int j = 0;
-        for (int face = 0; face < pixels.size(); face += 3) {
-            Vector3D v1 = pixels.get(face);
-            Vector3D v2 = pixels.get(face + 1);
-            Vector3D v3 = pixels.get(face + 2);
-
-            Vector3D vu = v3.sub(v1);
-            Vector3D vt = v2.sub(v1);
-
-            Vector3D normal = vt.cross(vu);
-            normal.normalize();
-
-            normalCoords[j++] = normal.getX();
-            normalCoords[j++] = normal.getY();
-            normalCoords[j++] = normal.getZ();
-            normalCoords[j++] = normal.getX();
-            normalCoords[j++] = normal.getY();
-            normalCoords[j++] = normal.getZ();
-            normalCoords[j++] = normal.getX();
-            normalCoords[j++] = normal.getY();
-            normalCoords[j++] = normal.getZ();
+        index = 0;
+        for (Vector3D normalVert : normal) {
+            normalCoords[index++] = normalVert.xyz[0];
+            normalCoords[index++] = normalVert.xyz[1];
+            normalCoords[index++] = normalVert.xyz[2];
         }
+//        int j = 0;
+//        for (int face = 0; face < pixels.size(); face += 3) {
+//            Vector3D v1 = pixels.get(face);
+//            Vector3D v2 = pixels.get(face + 1);
+//            Vector3D v3 = pixels.get(face + 2);
+//
+//            Vector3D vu = v3.sub(v1);
+//            Vector3D vt = v2.sub(v1);
+//
+//            Vector3D normal = vt.cross(vu);
+//            normal.normalize();
+//
+//            if(normalCoords[j] != 0)
+//                normalCoords[j++] = (normalCoords[j] + normal.getX())/2;
+//            normalCoords[j++] = normal.getX();
+//
+//            if(normalCoords[j] != 0)
+//                normalCoords[j++] = (normalCoords[j] + normal.getY())/2;
+//            normalCoords[j++] = normal.getY();
+//
+//            if(normalCoords[j] != 0)
+//                normalCoords[j++] = (normalCoords[j] + normal.getZ())/2;
+//            normalCoords[j++] = normal.getZ();
+//
+//
+//            if(normalCoords[j] != 0)
+//                normalCoords[j++] = (normalCoords[j] + normal.getX())/2;
+//            normalCoords[j++] = normal.getX();
+//
+//            if(normalCoords[j] != 0)
+//                normalCoords[j++] = (normalCoords[j] + normal.getY())/2;
+//            normalCoords[j++] = normal.getY();
+//
+//            if(normalCoords[j] != 0)
+//                normalCoords[j++] = (normalCoords[j] + normal.getZ())/2;
+//            normalCoords[j++] = normal.getZ();
+//
+//
+//            if(normalCoords[j] != 0)
+//                normalCoords[j++] = (normalCoords[j] + normal.getX())/2;
+//            normalCoords[j++] = normal.getX();
+//
+//            if(normalCoords[j] != 0)
+//                normalCoords[j++] = (normalCoords[j] + normal.getY())/2;
+//            normalCoords[j++] = normal.getY();
+//
+//            if(normalCoords[j] != 0)
+//                normalCoords[j++] = (normalCoords[j] + normal.getZ())/2;
+//            normalCoords[j++] = normal.getZ();
+//
+////            normalCoords[j++] = normal.getX();
+////            normalCoords[j++] = normal.getY();
+////            normalCoords[j++] = normal.getZ();
+////
+////            normalCoords[j++] = normal.getX();
+////            normalCoords[j++] = normal.getY();
+////            normalCoords[j++] = normal.getZ();
+////
+////            normalCoords[j++] = normal.getX();
+////            normalCoords[j++] = normal.getY();
+////            normalCoords[j++] = normal.getZ();
+//        }
 
 
         //COLOR
@@ -103,6 +151,8 @@ public class ModelDrawVR implements Draw {
             colorCoords[index++] = color[3];
         }
 
+
+        //Create Buffers
         vertexCount = vertCoords.length / COORDS_PER_VERTEX;
         ByteBuffer bbVertices = ByteBuffer.allocateDirect(vertCoords.length * 4);
         bbVertices.order(ByteOrder.nativeOrder());
@@ -123,23 +173,23 @@ public class ModelDrawVR implements Draw {
         colorBuffer.flip();
 
         // prepare shaders and OpenGL program
-        int vertexShader = loadGLShader(GLES20.GL_VERTEX_SHADER, R.raw.vertex_shader);
-        int passthroughShader = loadGLShader(GLES20.GL_FRAGMENT_SHADER, R.raw.fragment_shader);
+        int vertexShader = loadGLShader(GLES30.GL_VERTEX_SHADER, R.raw.vertex_shader);
+        int passthroughShader = loadGLShader(GLES30.GL_FRAGMENT_SHADER, R.raw.fragment_shader);
 
-        mProgram = GLES20.glCreateProgram();
-        GLES20.glAttachShader(mProgram, vertexShader);
-        GLES20.glAttachShader(mProgram, passthroughShader);
-        GLES20.glLinkProgram(mProgram);
-        GLES20.glUseProgram(mProgram);
+        mProgram = GLES30.glCreateProgram();
+        GLES30.glAttachShader(mProgram, vertexShader);
+        GLES30.glAttachShader(mProgram, passthroughShader);
+        GLES30.glLinkProgram(mProgram);
+        GLES30.glUseProgram(mProgram);
 
-        modelPositionParam = GLES20.glGetAttribLocation(mProgram, "a_Position");
-        modelNormalParam = GLES20.glGetAttribLocation(mProgram, "a_Normal");
-        modelColorParam = GLES20.glGetAttribLocation(mProgram, "a_Color");
+        modelPositionParam = GLES30.glGetAttribLocation(mProgram, "a_Position");
+        modelNormalParam = GLES30.glGetAttribLocation(mProgram, "a_Normal");
+        modelColorParam = GLES30.glGetAttribLocation(mProgram, "a_Color");
 
-        modelModelParam = GLES20.glGetUniformLocation(mProgram, "u_Model");
-        modelModelViewParam = GLES20.glGetUniformLocation(mProgram, "u_MVMatrix");
-        modelModelViewProjectionParam = GLES20.glGetUniformLocation(mProgram, "u_MVP");
-        modelLightPosParam = GLES20.glGetUniformLocation(mProgram, "u_LightPos");
+        modelModelParam = GLES30.glGetUniformLocation(mProgram, "u_Model");
+        modelModelViewParam = GLES30.glGetUniformLocation(mProgram, "u_MVMatrix");
+        modelModelViewProjectionParam = GLES30.glGetUniformLocation(mProgram, "u_MVP");
+        modelLightPosParam = GLES30.glGetUniformLocation(mProgram, "u_LightPos");
 
 
     }
@@ -153,41 +203,41 @@ public class ModelDrawVR implements Draw {
         float[] modelViewProjMatrix = new float[16];
         Matrix.multiplyMM(modelViewProjMatrix, 0, VrActivity.mProjectionViewMatrix, 0, entity.getTransformation().modelMatrix, 0);
 
-        GLES20.glUseProgram(mProgram);
+        GLES30.glUseProgram(mProgram);
 
-        GLES20.glUniform3fv(modelLightPosParam, 1, engine.getActivity().mLightEyeMatrix, 0);
+        GLES30.glUniform3fv(modelLightPosParam, 1, engine.getActivity().mLightEyeMatrix, 0);
 
         // Set the Model in the shader, used to calculate lighting
-        GLES20.glUniformMatrix4fv(modelModelParam, 1, false, entity.getTransformation().modelMatrix, 0);
+        GLES30.glUniformMatrix4fv(modelModelParam, 1, false, entity.getTransformation().modelMatrix, 0);
 
         float[] modelView = new float[16];
         Matrix.multiplyMM(modelView, 0, VrActivity.mViewMatrix, 0, entity.getTransformation().modelMatrix, 0);
 
         // Set the ModelView in the shader, used to calculate lighting
-        GLES20.glUniformMatrix4fv(modelModelViewParam, 1, false, modelView, 0);
+        GLES30.glUniformMatrix4fv(modelModelViewParam, 1, false, modelView, 0);
 
         // Set the position of the model
-        GLES20.glVertexAttribPointer(
-                modelPositionParam, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, vertexBuffer);
+        GLES30.glVertexAttribPointer(
+                modelPositionParam, COORDS_PER_VERTEX, GLES30.GL_FLOAT, false, 0, vertexBuffer);
 
         // Set the ModelViewProjection matrix in the shader.
-        GLES20.glUniformMatrix4fv(modelModelViewProjectionParam, 1, false, modelViewProjMatrix, 0);
+        GLES30.glUniformMatrix4fv(modelModelViewProjectionParam, 1, false, modelViewProjMatrix, 0);
 
         // Set the normal positions of the model, again for shading
-        GLES20.glVertexAttribPointer(modelNormalParam, 3, GLES20.GL_FLOAT, false, 0, normalBuffer);
-        GLES20.glVertexAttribPointer(modelColorParam, 4, GLES20.GL_FLOAT, false, 0, colorBuffer);
+        GLES30.glVertexAttribPointer(modelNormalParam, 3, GLES30.GL_FLOAT, false, 0, normalBuffer);
+        GLES30.glVertexAttribPointer(modelColorParam, 4, GLES30.GL_FLOAT, false, 0, colorBuffer);
 
         // Enable vertex arrays
-        GLES20.glEnableVertexAttribArray(modelPositionParam);
-        GLES20.glEnableVertexAttribArray(modelNormalParam);
-        GLES20.glEnableVertexAttribArray(modelColorParam);
+        GLES30.glEnableVertexAttribArray(modelPositionParam);
+        GLES30.glEnableVertexAttribArray(modelNormalParam);
+        GLES30.glEnableVertexAttribArray(modelColorParam);
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, vertexCount);
 
         // Disable vertex arrays
-        GLES20.glDisableVertexAttribArray(modelPositionParam);
-        GLES20.glDisableVertexAttribArray(modelNormalParam);
-        GLES20.glDisableVertexAttribArray(modelColorParam);
+        GLES30.glDisableVertexAttribArray(modelPositionParam);
+        GLES30.glDisableVertexAttribArray(modelNormalParam);
+        GLES30.glDisableVertexAttribArray(modelColorParam);
 
         GLUtils.checkGlError("Drawing model");
     }
@@ -222,18 +272,18 @@ public class ModelDrawVR implements Draw {
             e.printStackTrace();
         }
 
-        int shader = GLES20.glCreateShader(type);
-        GLES20.glShaderSource(shader, code);
-        GLES20.glCompileShader(shader);
+        int shader = GLES30.glCreateShader(type);
+        GLES30.glShaderSource(shader, code);
+        GLES30.glCompileShader(shader);
 
         // Get the compilation status.
         final int[] compileStatus = new int[1];
-        GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
+        GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, compileStatus, 0);
 
         // If the compilation failed, delete the shader.
         if (compileStatus[0] == 0) {
-            Log.e(getClass().getSimpleName(), "Error compiling shader: " + GLES20.glGetShaderInfoLog(shader));
-            GLES20.glDeleteShader(shader);
+            Log.e(getClass().getSimpleName(), "Error compiling shader: " + GLES30.glGetShaderInfoLog(shader));
+            GLES30.glDeleteShader(shader);
             shader = 0;
         }
 

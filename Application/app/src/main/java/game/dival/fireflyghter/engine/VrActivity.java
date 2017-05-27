@@ -1,6 +1,6 @@
 package game.dival.fireflyghter.engine;
 
-import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,7 +26,7 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
 
     private static final float Z_NEAR = 1f;
     private static final float Z_FAR = 1000f;
-    public float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{0f, 5f, 0.0f, 1.0f};
+    public float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{0f, 50f, 0.0f, 1.0f};
     public static float[] mViewMatrix = new float[16];
     public static float[] mProjectionViewMatrix = new float[16];
     public static float[] mLightEyeMatrix = new float[16];
@@ -64,7 +64,7 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
     public void onNewFrame(HeadTransform headTransform) {
 
         //Creation of a beautiful blue sky
-        GLES20.glClearColor(0.529411765f, 0.807843137f, 0.980392157f, 1.0f);
+        GLES30.glClearColor(0.529411765f, 0.807843137f, 0.980392157f, 1.0f);
 
         //Get the Camera Matrix
         camera = engine.getCamera().updateCamera(headTransform);
@@ -76,8 +76,8 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
     @Override
     public void onDrawEye(Eye eye) {
 
-        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+        GLES30.glEnable(GLES30.GL_DEPTH_TEST);
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
 
         GLUtils.checkGlError("colorParam");
 
@@ -97,6 +97,12 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
         Matrix.multiplyMM(mProjectionViewMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         //UPDATE THE MODELS WITH THE PROJECTIONVIEW MATRIX
+
+        GLES30.glFrontFace(GLES30.GL_CCW);
+        GLES30.glEnable(GLES30.GL_CULL_FACE);
+        GLES30.glCullFace(GLES30.GL_BACK);
+        GLES30.glEnable(GLES30.GL_DEPTH_TEST);
+
         engine.draw();
         //-----------------------------------------------------------------------------------------
 
@@ -110,11 +116,7 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
     @Override
     public void onSurfaceChanged(int i, int i1) {
 
-        // Use culling to remove back faces.
-        GLES20.glEnable(GLES20.GL_CULL_FACE);
 
-        // Enable depth testing
-        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
     }
 
     public void setup(VREngine engine) {

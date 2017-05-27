@@ -19,10 +19,9 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
 
     float variation;
     private VREngine gameEngine;
-    private Transformation sphereTransformation;
+    private Transformation sphereTrans;
     private Entity sphere;
     private Transformation floorTrans;
-    private Entity sun;
     private Transformation sunTrans;
 
     @Override
@@ -32,8 +31,10 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         // EXAMPLE OF PINE TREE ON DivaEngine
         GameResources resources = new GameResources();
         resources.addOBJ(this, "pine", "pine.obj");
-        resources.addOBJ(this, "cube", "plane.obj");
+//        resources.addOBJ(this, "cube", "cube.obj");
         resources.addOBJ(this, "sphere", "sphere.obj");
+        resources.addOBJ(this, "plane", "plane.obj");
+        resources.addOBJ(this, "cloud", "cloudsmooth.obj");
 
         gameEngine = new VREngine(this, resources, this);
 
@@ -41,37 +42,32 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         camera.getTransformation().setTranslation(0, 5, 0);
         gameEngine.addCamera(camera);
 
-        sphere = new Entity("sphere");
-        sphereTransformation = new Transformation();
-        sphereTransformation.setTranslation(0, 2f, -5);
-        sphere.addComponent(sphereTransformation);
-        sphere.addComponent(new Model3D("sphere", gameEngine));
-        gameEngine.entities.add(sphere);
-
-        sun = new Entity("sun");
-        sunTrans = new Transformation();
-        sunTrans.setTranslation(0, 0, 0);
-        sun.addComponent(sunTrans);
-        sun.addComponent(new Model3D("sphere", gameEngine));
+        sphere = new Entity("clouds");
+        sphereTrans = new Transformation();
+        sphereTrans.setTranslation(0, 4f, -5);
+        sphere.addComponent(sphereTrans);
+        sphere.addComponent(new Model3D("cloud", gameEngine));
         gameEngine.entities.add(sphere);
 
         Entity floor = new Entity("floor");
         floorTrans = new Transformation();
         floorTrans.setTranslation(0, 0, 0);
-        floorTrans.setScale(50f, 0.1f, 50f);
-
+        floorTrans.setScale(50f, 0.5f, 50f);
         floor.addComponent(floorTrans);
-        floor.addComponent(new Model3D("cube", gameEngine));
+        floor.addComponent(new Model3D("sphere", gameEngine));
         gameEngine.entities.add(floor);
+//
+//        Entity cloud = new Entity("monkey");
+//        Transformation cloudRransformation = new Transformation();
+//        cloudRransformation.setTranslation(0,8,-5);
+//        cloud.addComponent(cloudRransformation);
+//        cloud.addComponent(new Model3D("monkey",gameEngine));
+//        gameEngine.entities.add(cloud);
 
-        RandomElements.addRandomPines(50, 50, gameEngine);
+//        RandomElements.addRandomPines(100, 30, gameEngine);
 
 //        camera.followEntity(sphere);
 
-//        FireParticles fireParticles = new FireParticles(gameEngine);
-//        fireParticles.addComponent(new Transformation(fireParticles));
-//        gameEngine.entities.add(fireParticles);
-//        fireParticles.initFire();
     }
 
     @Override
@@ -99,7 +95,6 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
     @Override
     public void gameFrame() {
 //        Log.d(getClass().getSimpleName(),"gameFrame()");
-//        floorTrans.setRotation(0f,0f,floorTrans.getRotation().xyz[2]++);
-        sphereTransformation.setRotation(variation++, variation, variation);
+        sphereTrans.setRotation(variation++,variation++,variation++);
     }
 }

@@ -9,6 +9,11 @@ import game.dival.fireflyghter.engine.math.Vector3D;
 
 /**
  * Created by arauj on 05/03/2017.
+ *
+ * Axis Aligned Bounding Box (AABB)
+ *
+ * Basically its the smallest Cuboid that can completely contain the shape, usually defined by a pair of 3d co-ordinates.
+ *
  */
 
 public class BoxCollision extends Collision {

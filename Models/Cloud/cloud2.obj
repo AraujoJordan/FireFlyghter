@@ -1,6 +1,6 @@
 # Blender v2.76 (sub 0) OBJ File: ''
 # www.blender.org
-mtllib cloud.mtl
+mtllib cloud2.mtl
 o GeoSphere007
 v 3.285834 1.995927 -3.184747
 v 3.177999 1.869739 -2.925057
