@@ -29,4 +29,17 @@ public class RandomElements {
             engine.entities.add(pine);
         }
     }
+
+    public static void addRandomclouds(int numerOfClouds, int distance, int initialZ, GameEngine engine) {
+        for (int i = 0; i <= numerOfClouds; i++) {
+            Entity cloud = new Entity("cloud" + i); // Create PINE
+            Transformation transformation = new Transformation();
+            transformation.setTranslation((float) randDouble(-distance, distance), (float) randDouble(initialZ, initialZ + 20), (float) randDouble(-distance, distance));
+            float scale = (float) randDouble(2, 20);
+            transformation.setScale(scale, scale, scale);
+            cloud.addComponent(new Model3D("cloud", engine));
+            cloud.addComponent(transformation); //add translation, scale, rotation
+            engine.entities.add(cloud);
+        }
+    }
 }
