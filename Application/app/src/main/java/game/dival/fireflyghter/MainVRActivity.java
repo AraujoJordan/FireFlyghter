@@ -51,17 +51,10 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         Entity floor = new Entity("floor");
         floorTrans = new Transformation();
         floorTrans.setTranslation(0, 0, 0);
-        floorTrans.setScale(50f, 0.5f, 50f);
+        floorTrans.setScale(100f, 1f, 100f);
         floor.addComponent(floorTrans);
-        floor.addComponent(new Model3D("cube", gameEngine));
+        floor.addComponent(new Model3D("plane", gameEngine));
         gameEngine.entities.add(floor);
-//
-//        Entity cloud = new Entity("monkey");
-//        Transformation cloudRransformation = new Transformation();
-//        cloudRransformation.setTranslation(0,8,-5);
-//        cloud.addComponent(cloudRransformation);
-//        cloud.addComponent(new Model3D("monkey",gameEngine));
-//        gameEngine.entities.add(cloud);
 
         RandomElements.addRandomPines(100, 30, gameEngine);
 
