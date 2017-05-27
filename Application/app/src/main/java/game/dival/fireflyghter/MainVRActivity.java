@@ -31,8 +31,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         // EXAMPLE OF PINE TREE ON DivaEngine
         GameResources resources = new GameResources();
         resources.addOBJ(this, "pine", "pine.obj");
-//        resources.addOBJ(this, "cube", "cube.obj");
-        resources.addOBJ(this, "sphere", "sphere.obj");
+        resources.addOBJ(this, "cube", "cube.obj");
         resources.addOBJ(this, "plane", "plane.obj");
         resources.addOBJ(this, "cloud", "cloudsmooth.obj");
 
@@ -54,7 +53,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         floorTrans.setTranslation(0, 0, 0);
         floorTrans.setScale(50f, 0.5f, 50f);
         floor.addComponent(floorTrans);
-        floor.addComponent(new Model3D("sphere", gameEngine));
+        floor.addComponent(new Model3D("cube", gameEngine));
         gameEngine.entities.add(floor);
 //
 //        Entity cloud = new Entity("monkey");
@@ -64,7 +63,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
 //        cloud.addComponent(new Model3D("monkey",gameEngine));
 //        gameEngine.entities.add(cloud);
 
-//        RandomElements.addRandomPines(100, 30, gameEngine);
+        RandomElements.addRandomPines(100, 30, gameEngine);
 
 //        camera.followEntity(sphere);
 
