@@ -43,7 +43,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
 
         sphere = new Entity("clouds");
         sphereTrans = new Transformation();
-        sphereTrans.setTranslation(0, 4f, -5);
+        sphereTrans.setTranslation(0, 5f, -6);
         sphere.addComponent(sphereTrans);
         sphere.addComponent(new Model3D("cloud", gameEngine));
         gameEngine.entities.add(sphere);
@@ -58,7 +58,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
 
         RandomElements.addRandomPines(100, 30, gameEngine);
 
-//        camera.followEntity(sphere);
+        camera.followEntity(sphere);
 
     }
 
@@ -67,7 +67,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         Camera cam = gameEngine.getCamera();
         if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
             Vector3D fowardDirection = cam.getLookDirection();
-            cam.getTransformation().setTranslation(
+            sphere.getTransformation().setTranslation(
                     cam.getTransformation().getTranslation().xyz[0] - fowardDirection.getX(),
                     cam.getTransformation().getTranslation().xyz[1] - fowardDirection.getY(),
                     cam.getTransformation().getTranslation().xyz[2] - fowardDirection.getZ()
@@ -75,7 +75,8 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         }
         if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP)) {
             Vector3D fowardDirection = cam.getLookDirection();
-            cam.getTransformation().setTranslation(
+
+            sphere.getTransformation().setTranslation(
                     cam.getTransformation().getTranslation().xyz[0] + fowardDirection.getX(),
                     cam.getTransformation().getTranslation().xyz[1] + fowardDirection.getY(),
                     cam.getTransformation().getTranslation().xyz[2] + fowardDirection.getZ()
