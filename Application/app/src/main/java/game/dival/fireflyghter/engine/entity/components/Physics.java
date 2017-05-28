@@ -1,6 +1,8 @@
 package game.dival.fireflyghter.engine.entity.components;
 
 
+import android.util.Log;
+
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.math.Vector3D;
@@ -11,45 +13,46 @@ import game.dival.fireflyghter.engine.math.Vector3D;
 
 public class Physics extends Component {
 
-    final static Vector3D GRAVITY_FORCE = new Vector3D(0, -0.001f, 0);
+    final static Vector3D GRAVITY_FORCE = new Vector3D(0, -0.00001f, 0);
     boolean hasGravity;
-    Vector3D inertiaVector;
+    private Vector3D inertiaVector;
     private int transIndex = -1; //do not change, it will be use for optimization
-    private float weight;
+    private float mass;
 
-    public Physics(Entity parentEntity, Vector3D inertiaVector, float weight, boolean hasGravity) {
+    public Physics(Entity parentEntity, Vector3D inertiaVector, float mass, boolean hasGravity) {
         super(parentEntity);
         this.inertiaVector = inertiaVector;
-        setWeight(weight);
+        setMass(mass);
         this.hasGravity = hasGravity;
 
     }
 
-    public Physics(Vector3D inertiaVector, float weight, boolean hasGravity) {
+    public Physics(Vector3D inertiaVector, float mass, boolean hasGravity) {
         super();
         this.inertiaVector = inertiaVector;
-        setWeight(weight);
+        setMass(mass);
         this.hasGravity = hasGravity;
 
     }
 
-    public float getWeight() {
-        return weight;
+    public float getMass() {
+        return mass;
     }
 
-    public void setWeight(float weight) {
-        if (weight == 0)
+    public void setMass(float mass) {
+        if (mass == 0)
             throw new IllegalArgumentException("Physics: Weight cannot be zero");
-        this.weight = weight;
+        this.mass = mass;
     }
 
     public void applyForce(Vector3D forceVector) {
-        Vector3D accelVector = new Vector3D();
-        accelVector.xyz[0] = forceVector.xyz[0] / weight; //ACCELERATION = FORCE / MASS;
-        accelVector.xyz[1] = forceVector.xyz[1] / weight;
-        accelVector.xyz[2] = forceVector.xyz[2] / weight;
 
-        inertiaVector.add(accelVector);
+        Vector3D accelVector = new Vector3D();
+        accelVector.xyz[0] = forceVector.xyz[0] / mass; //ACCELERATION = FORCE / MASS;
+        accelVector.xyz[1] = forceVector.xyz[1] / mass;
+        accelVector.xyz[2] = forceVector.xyz[2] / mass;
+
+        inertiaVector = inertiaVector.add(accelVector);
     }
 
     public float getSpeed() {
@@ -65,7 +68,9 @@ public class Physics extends Component {
             applyForce(GRAVITY_FORCE);
 
         Transformation transformation = parentEntity.getTransformation();
-        transformation.getTranslation().add(inertiaVector);
+        transformation.setTranslation(transformation.getTranslation().add(inertiaVector));
+
+        Log.d("Physics",transformation.getTranslation().toString());
 
     }
 }

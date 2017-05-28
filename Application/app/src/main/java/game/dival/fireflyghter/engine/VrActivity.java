@@ -24,14 +24,14 @@ import game.dival.fireflyghter.engine.renderer.GLUtils;
 
 public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
 
-    private static final float Z_NEAR = 1f;
+    private static final float Z_NEAR = 0.5f;
     private static final float Z_FAR = 1000f;
     public float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{0f, 10f, 0.0f, 1.0f};
     public static float[] mViewMatrix = new float[16];
     public static float[] mProjectionViewMatrix = new float[16];
     public static float[] mLightEyeMatrix = new float[16];
     private GvrView gvrView;
-    private VREngine engine;
+    public VREngine engine;
     private float[] camera = new float[16];
     private double theta = 0;
 
@@ -85,7 +85,7 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
         //VIEW MATRIX CREATION
         Matrix.multiplyMM(mViewMatrix, 0, eye.getEyeView(), 0, camera, 0);
 
-        //MAKE LIGHT ROTATE THE SCREEN
+        //UPDATE LIGHT
         //-----------------------------------------------------------------------------------------
         Matrix.multiplyMV(mLightEyeMatrix, 0, mViewMatrix, 0, LIGHT_POS_IN_WORLD_SPACE, 0);
 
@@ -97,7 +97,6 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
         Matrix.multiplyMM(mProjectionViewMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         //UPDATE THE MODELS WITH THE PROJECTIONVIEW MATRIX
-
         GLES30.glFrontFace(GLES30.GL_CCW);
         GLES30.glEnable(GLES30.GL_CULL_FACE);
         GLES30.glCullFace(GLES30.GL_BACK);

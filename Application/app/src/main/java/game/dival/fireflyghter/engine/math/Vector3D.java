@@ -1,5 +1,7 @@
 package game.dival.fireflyghter.engine.math;
 
+import android.util.Log;
+
 import java.util.Arrays;
 
 /**

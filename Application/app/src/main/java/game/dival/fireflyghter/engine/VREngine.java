@@ -100,6 +100,8 @@ public class VREngine extends GameEngine {
             if (entity.getModel3D() != null)
                 entity.run(this);
 
+            if (camera.getPhysics() != null)
+                camera.getPhysics().run(this);
             //ASYNC
 //            new RunComponentsAsync(this,mMVPMatrix).execute(entity);
 //            entity.getModel3D().draw(this,mMVPMatrix);

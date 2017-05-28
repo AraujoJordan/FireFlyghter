@@ -1,8 +1,6 @@
 package game.dival.fireflyghter;
 
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import game.dival.fireflyghter.engine.GameEngine;
@@ -11,6 +9,7 @@ import game.dival.fireflyghter.engine.VREngine;
 import game.dival.fireflyghter.engine.VrActivity;
 import game.dival.fireflyghter.engine.entity.Camera;
 import game.dival.fireflyghter.engine.entity.Entity;
+import game.dival.fireflyghter.engine.entity.components.Physics;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
 import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 import game.dival.fireflyghter.engine.math.Vector3D;
@@ -25,6 +24,8 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
     private Entity sphere;
     private Transformation floorTrans;
     private Transformation sunTrans;
+    private Entity bird;
+    private Camera camera;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,8 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
 
         gameEngine = new VREngine(this, resources, this);
 
-        final Camera camera = new Camera("mainCamera");
+        camera = new Camera("mainCamera");
+//        camera.addComponent(new Physics(new Vector3D(0, 0, 0), 1000, true));
         camera.getTransformation().setTranslation(0, 5, 0);
         gameEngine.addCamera(camera);
 
@@ -51,11 +53,12 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         sphere.addComponent(new Model3D("cloud", gameEngine));
         gameEngine.entities.add(sphere);
 
-        Entity bird = new Entity("bird");
+        bird = new Entity("bird");
         Transformation birdTransformation = new Transformation();
         birdTransformation.setTranslation(0, 5f, -6);
         birdTransformation.setScale(1f, 1f, -1f);
         bird.addComponent(birdTransformation);
+//        bird.addComponent(new Physics(camera.getLookDirection(), 1f, true));
         bird.addComponent(new Model3D("bird", gameEngine));
         gameEngine.entities.add(bird);
 
@@ -69,8 +72,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
 
         RandomElements.addRandomPines(100, 30, gameEngine);
 
-        camera.updateEntity(bird);
-
+        camera.follow(bird, this);
     }
 
     @Override
@@ -101,6 +103,8 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
     @Override
     public void gameFrame() {
 //        Log.d(getClass().getSimpleName(),"gameFrame()");
-        sphereTrans.setRotation(variation++,variation++,variation++);
+        camera.getTransformation().setTranslation(camera.getTransformation().getTranslation().add(camera.getLookDirection().scalarMultiply(0.3f)));
+//        camera.getPhysics().applyForce(camera.getLookDirection().scalarMultiply(0.05f));
+        sphereTrans.setRotation(variation++, variation++, variation++);
     }
 }

@@ -33,8 +33,8 @@ public class FireParticles extends Entity {
 
     public void run(GameEngine engine, float[] mvp) {
         for (ParticleTriangle particle : triangles) {
-            if (particle.isOver())
-                particle = new ParticleTriangle(this);
+//            if (particle.isOver())
+//                particle = new ParticleTriangle(this);
             particle.run(engine);
         }
     }
@@ -71,9 +71,9 @@ public class FireParticles extends Entity {
             addComponent(physics);
         }
 
-        public boolean isOver() {
-            return physics.inertiaVector.getY() < 0;
-        }
+//        public boolean isOver() {
+//            return physics.inertiaVector.getY() < 0;
+//        }
 
         public void run(GameEngine engine) {
             double distanceYPercent = (1.0d - (getTransformation().getTranslation().getY()
