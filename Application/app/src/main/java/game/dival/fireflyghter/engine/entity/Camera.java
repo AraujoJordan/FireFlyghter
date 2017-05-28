@@ -58,20 +58,14 @@ public class Camera extends Entity {
             euler[1] = (float) ((euler[1]+Math.PI)*57.2958f); //in degree
             euler[2] = (float) ((euler[2]+Math.PI)*57.2958f); //in degree
 
-            Log.d("conLook", Arrays.toString(euler));
+//            Log.d("conLook", Arrays.toString(euler));
 
             //ROTATE THE BIRD
-            entityToFollowCamera.getTransformation().setRotation(new Vector3D(euler[0],-euler[1],180f));
+            entityToFollowCamera.getTransformation().setRotation(new Vector3D(0,(euler[1]+180),0f));
 
             //MOVE THE BIRD
-//            entityToFollowCamera.getTransformation().setTranslation(
-//                    entityToFollowCamera.getTransformation().getTranslation().xyz[0] + ((float) (3 * Math.cos(euler[0])/57.2958)),
-//                    entityToFollowCamera.getTransformation().getTranslation().xyz[1]+ ((float) (3 * -Math.sin(euler[1]/57.2958))),
-//                    entityToFollowCamera.getTransformation().getTranslation().xyz[2]+ ((float) (3 * Math.sin(euler[2]/57.2958)))
-//            );
-
             Vector3D birdPos = new Vector3D(camTrans.xyz[0],camTrans.xyz[1],camTrans.xyz[2]);
-            birdPos = birdPos.add(getLookDirection());
+            birdPos = birdPos.add(getLookDirection().scalarMultiply(1.5f));
 
             float[] up = new float[3];
             headTransform.getUpVector(up,0);
