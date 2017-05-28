@@ -13,6 +13,8 @@ import game.dival.fireflyghter.engine.entity.components.Physics;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
 import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 import game.dival.fireflyghter.engine.math.Vector3D;
+import game.dival.fireflyghter.engine.sound.AudioLibrary;
+import game.dival.fireflyghter.engine.sound.SoundHandler;
 import game.dival.fireflyghter.engine.utils.RandomElements;
 
 
@@ -26,10 +28,13 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
     private Transformation sunTrans;
     private Entity bird;
     private Camera camera;
+    private AudioLibrary audioLibrary;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        audioLibrary = new AudioLibrary(this); // Start audio library
 
         // EXAMPLE OF PINE TREE ON DivaEngine
         GameResources resources = new GameResources();
@@ -71,6 +76,8 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         gameEngine.entities.add(floor);
 
         RandomElements.addRandomPines(100, 30, gameEngine);
+
+        audioLibrary.addStereoSource(new SoundHandler("lost-within.mp3", true).setVolume(0.5f)).startAll();
 
         camera.follow(bird);
     }
