@@ -72,7 +72,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
 
         RandomElements.addRandomPines(100, 30, gameEngine);
 
-        camera.follow(bird, this);
+        camera.follow(bird);
     }
 
     @Override

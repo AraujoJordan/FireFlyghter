@@ -70,7 +70,5 @@ public class Physics extends Component {
         Transformation transformation = parentEntity.getTransformation();
         transformation.setTranslation(transformation.getTranslation().add(inertiaVector));
 
-        Log.d("Physics",transformation.getTranslation().toString());
-
     }
 }

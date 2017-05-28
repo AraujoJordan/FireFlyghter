@@ -1,13 +1,15 @@
 package game.dival.fireflyghter.engine.entity;
 
 import android.opengl.Matrix;
+import android.util.Log;
 
 import com.google.vr.sdk.base.HeadTransform;
+
+import java.util.Arrays;
 
 import game.dival.fireflyghter.engine.VrActivity;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
 import game.dival.fireflyghter.engine.math.Vector3D;
-import game.dival.fireflyghter.engine.utils.SensorController;
 
 /**
  * Created by arauj on 05/03/2017.
@@ -19,8 +21,6 @@ public class Camera extends Entity {
     private Entity entityToFollowCamera = null;
     private HeadTransform headTransform;
     private float[] cameraMatrix = new float[16];
-
-    public SensorController sensorController;
 
     public Camera(String cameraName) {
         super(cameraName);
@@ -47,17 +47,45 @@ public class Camera extends Entity {
                 0, 1, 0);
 
         if (entityToFollowCamera != null) {
-            entityToFollowCamera.getTransformation().setTranslation(
-                    camTrans.xyz[0],
-                    camTrans.xyz[1] - 2f,
-                    camTrans.xyz[2] - 3f);
+
+
+
+
+            float[] euler = new float[3];
+            headTransform.getEulerAngles(euler,0);
+
+            euler[0] = (float) ((2*(euler[0] + Math.PI/2))*57.2958f); //in degree
+            euler[1] = (float) ((euler[1]+Math.PI)*57.2958f); //in degree
+            euler[2] = (float) ((euler[2]+Math.PI)*57.2958f); //in degree
+
+            Log.d("conLook", Arrays.toString(euler));
+
+            //ROTATE THE BIRD
+            entityToFollowCamera.getTransformation().setRotation(new Vector3D(euler[0],-euler[1],180f));
+
+            //MOVE THE BIRD
+//            entityToFollowCamera.getTransformation().setTranslation(
+//                    entityToFollowCamera.getTransformation().getTranslation().xyz[0] + ((float) (3 * Math.cos(euler[0])/57.2958)),
+//                    entityToFollowCamera.getTransformation().getTranslation().xyz[1]+ ((float) (3 * -Math.sin(euler[1]/57.2958))),
+//                    entityToFollowCamera.getTransformation().getTranslation().xyz[2]+ ((float) (3 * Math.sin(euler[2]/57.2958)))
+//            );
+
+            Vector3D birdPos = new Vector3D(camTrans.xyz[0],camTrans.xyz[1],camTrans.xyz[2]);
+            birdPos = birdPos.add(getLookDirection());
+
+            float[] up = new float[3];
+            headTransform.getUpVector(up,0);
+            Vector3D downPosition = new Vector3D(-up[0],-up[1],-up[2]);
+
+            birdPos = birdPos.add(downPosition);
+
+            entityToFollowCamera.getTransformation().setTranslation(birdPos);
+
         }
         return cameraMatrix;
     }
 
-    public void follow(Entity entity, VrActivity act) {
-        if (sensorController == null)
-            sensorController = new SensorController(act, act.engine);
+    public void follow(Entity entity) {
         this.entityToFollowCamera = entity;
     }
 }
