@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -83,7 +82,7 @@ public class ModelDrawVR implements Draw {
             color = colorObj.getFloatRGBA();
         }
 
-        Log.d("Color",Arrays.toString(color));
+        Log.d("Color", Arrays.toString(color));
         float[] colorCoords = new float[pixels.size() * 4];
         index = 0;
         for (int i = 0; i < pixels.size(); i++) {
@@ -144,7 +143,7 @@ public class ModelDrawVR implements Draw {
 
         GLES30.glUseProgram(mProgram);
 
-        GLES30.glUniform3fv(modelLightPosParam, 1, engine.getActivity().mLightEyeMatrix, 0);
+        GLES30.glUniform3fv(modelLightPosParam, 1, VrActivity.mLightEyeMatrix, 0);
 
         // Set the Model in the shader, used to calculate lighting
         GLES30.glUniformMatrix4fv(modelModelParam, 1, false, entity.getTransformation().modelMatrix, 0);

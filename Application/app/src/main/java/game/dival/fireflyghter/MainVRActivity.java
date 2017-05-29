@@ -39,12 +39,11 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         resources.addOBJ(this, "sphere", "sphere.obj");
         resources.addOBJ(this, "plane", "plane.obj");
         resources.addOBJ(this, "cloud", "cloudsmooth.obj");
-        resources.addOBJ(this, "bird", "bird3.obj");
+        resources.addOBJ(this, "bird", "bird2.obj");
 
         gameEngine = new VREngine(this, resources, this);
 
         camera = new Camera("mainCamera");
-//        camera.addComponent(new Physics(new Vector3D(0, 0, 0), 1000, true));
         camera.getTransformation().setTranslation(0, 5, 0);
         gameEngine.addCamera(camera);
 
@@ -53,15 +52,24 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         bird.addComponent(new Model3D("bird", gameEngine));
         gameEngine.entities.add(bird);
 
+        Entity island = new Entity("island");
+        Transformation islandTrans = new Transformation(0,0,0);
+        islandTrans.setScale(50f,1f,50f);
+        island.addComponent(islandTrans);
+        island.addComponent(new Model3D("sphere",gameEngine));
+        gameEngine.entities.add(island);
+
         Entity water = new Entity("water");
         waterTrans = new Transformation();
-        waterTrans.setScale(10000f, 1f, 10000f);
+        waterTrans.setScale(100000f, 1f, 100000f);
         water.addComponent(waterTrans);
         water.addComponent(new Model3D("plane", gameEngine, new Color(0.0f, 0.4f, 0.6f, 1f)));
         gameEngine.entities.add(water);
 
         Entity sun = new Entity("sun");
-        sun.addComponent(new Transformation(201f, 201f, 201f));
+        Transformation sunTrans = new Transformation(250f, 260f, 260f);
+        sunTrans.setScale(50f,50f,50f);
+        sun.addComponent(sunTrans);
         sun.addComponent(new Model3D("sphere", gameEngine, new Color(0.9f, 0.7f, 0.0f, 1f)));
         gameEngine.entities.add(sun);
 
