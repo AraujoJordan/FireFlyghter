@@ -25,7 +25,7 @@ void main()
         difuseColor.a = 1.0;
 
         // Specular
-        float specularStrength = 1.0f;
+        float specularStrength = 1.0;
         vec3 viewDir = normalize(-modelViewVertex); // The viewer is at (0,0,0) so viewDir is (0,0,0) - Position => -Position
         vec3 norm = normalize(a_Normal);
         vec3 reflectDir = reflect(-lightVector, norm);
