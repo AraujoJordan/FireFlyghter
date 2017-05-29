@@ -9,12 +9,21 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import game.dival.fireflyghter.engine.sound.AudioLibrary;
+import game.dival.fireflyghter.engine.sound.SoundHandler;
+
 public class HomeActivity extends Activity {
+    private SoundHandler handler = new SoundHandler("caio-guitar.mp3", true);
+    private AudioLibrary library;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        library = new AudioLibrary(this);
+
+        library.addStereoSource(handler).startAll();
 
         View decorView = getWindow().getDecorView();
 
@@ -31,6 +40,7 @@ public class HomeActivity extends Activity {
         startMainActivity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                library.pauseAll();
                 startActivity(new Intent(HomeActivity.this, MainVRActivity.class));
             }
         });
@@ -59,6 +69,7 @@ public class HomeActivity extends Activity {
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                library.pauseAll();
                 finish();
             }
         });
