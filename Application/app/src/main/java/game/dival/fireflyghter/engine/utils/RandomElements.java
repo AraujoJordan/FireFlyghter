@@ -1,6 +1,7 @@
 package game.dival.fireflyghter.engine.utils;
 
 import game.dival.fireflyghter.engine.GameEngine;
+import game.dival.fireflyghter.engine.draw.Color;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
 import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
@@ -24,7 +25,7 @@ public class RandomElements {
             Entity pine = new Entity("pine" + i); // Create PINE
             Transformation transformation = new Transformation();
             transformation.setTranslation((float) randDouble(-distance, distance), 0, (float) randDouble(-distance, distance));
-            pine.addComponent(new Model3D("pine", engine));
+            pine.addComponent(new Model3D("pine", engine, new Color(0.0f, 1.0f, 0.0f, 1.0f)));
             pine.addComponent(transformation); //add translation, scale, rotation
             engine.entities.add(pine);
         }
@@ -37,7 +38,7 @@ public class RandomElements {
             transformation.setTranslation((float) randDouble(-distance, distance), (float) randDouble(initialZ, initialZ + 20), (float) randDouble(-distance, distance));
             float scale = (float) randDouble(2, 20);
             transformation.setScale(scale, scale, scale);
-            cloud.addComponent(new Model3D("cloud", engine));
+            cloud.addComponent(new Model3D("cloud", engine, new Color(1f,1f,1f,1f)));
             cloud.addComponent(transformation); //add translation, scale, rotation
             engine.entities.add(cloud);
         }
