@@ -29,6 +29,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
     private Entity bird;
     private Camera camera;
     private AudioLibrary audioLibrary;
+    private SoundHandler soundHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         resources.addOBJ(this, "cube", "cube.obj");
         resources.addOBJ(this, "plane", "plane.obj");
         resources.addOBJ(this, "cloud", "cloudsmooth.obj");
-        resources.addOBJ(this, "bird", "bird2.obj");
+        resources.addOBJ(this, "bird", "bird3.obj");
 
         gameEngine = new VREngine(this, resources, this);
 
@@ -77,7 +78,8 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
 
         RandomElements.addRandomPines(100, 30, gameEngine);
 
-        audioLibrary.addStereoSource(new SoundHandler("lost-within.mp3", true).setVolume(0.5f)).startAll();
+        soundHandler = new SoundHandler("lost-within.mp3", true);
+        audioLibrary.addStereoSource(soundHandler.setVolume(0.5f)).startAll();
 
         camera.follow(bird);
     }
@@ -113,5 +115,11 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         camera.getTransformation().setTranslation(camera.getTransformation().getTranslation().add(camera.getLookDirection().scalarMultiply(0.3f)));
 //        camera.getPhysics().applyForce(camera.getLookDirection().scalarMultiply(0.05f));
         sphereTrans.setRotation(variation++, variation++, variation++);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        audioLibrary.pauseAll();
     }
 }
