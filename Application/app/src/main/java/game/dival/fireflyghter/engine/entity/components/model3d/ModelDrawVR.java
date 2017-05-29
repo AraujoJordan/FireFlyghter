@@ -60,7 +60,6 @@ public class ModelDrawVR implements Draw {
         this.entity = entity;
         this.engine = (VREngine) engine;
 
-
         //VERTS
         float[] vertCoords = new float[pixels.size() * 3];
         int index = 0;
@@ -70,7 +69,6 @@ public class ModelDrawVR implements Draw {
             vertCoords[index++] = vert.xyz[2];
         }
 
-
         //NORMAL
         float[] normalCoords = new float[vertCoords.length];
         index = 0;
@@ -79,8 +77,6 @@ public class ModelDrawVR implements Draw {
             normalCoords[index++] = normalVert.xyz[1];
             normalCoords[index++] = normalVert.xyz[2];
         }
-
-
 
         //COLOR
         if (colorObj != null) {
@@ -96,7 +92,6 @@ public class ModelDrawVR implements Draw {
             colorCoords[index++] = color[2];
             colorCoords[index++] = color[3];
         }
-
 
         //Create Buffers
         vertexCount = vertCoords.length / COORDS_PER_VERTEX;
@@ -136,8 +131,6 @@ public class ModelDrawVR implements Draw {
         modelModelViewParam = GLES30.glGetUniformLocation(mProgram, "u_MVMatrix");
         modelModelViewProjectionParam = GLES30.glGetUniformLocation(mProgram, "u_MVP");
         modelLightPosParam = GLES30.glGetUniformLocation(mProgram, "u_LightPos");
-
-
     }
 
     /**

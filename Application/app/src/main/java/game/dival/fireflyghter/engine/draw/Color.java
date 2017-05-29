@@ -1,9 +1,5 @@
 package game.dival.fireflyghter.engine.draw;
 
-import android.util.Log;
-
-import java.util.Arrays;
-
 /**
  * Created by arauj on 06/03/2017.
  */
