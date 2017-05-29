@@ -37,7 +37,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         resources.addOBJ(this, "pine", "pine.obj");
         resources.addOBJ(this, "sphere", "sphere.obj");
         resources.addOBJ(this, "plane", "plane.obj");
-        resources.addOBJ(this, "cloud", "cloudsmooth.obj");
+        resources.addOBJ(this, "cloud", "cloud4.obj");
         resources.addOBJ(this, "bird", "bird2.obj");
 
         gameEngine = new VREngine(this, resources, this);
@@ -73,6 +73,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         gameEngine.entities.add(sun);
 
         RandomElements.addRandomPines(100, 30, gameEngine);
+        RandomElements.addRandomclouds(10,50,50,gameEngine);
 
         soundHandler = new SoundHandler("lost-within.mp3", true);
         audioLibrary.addStereoSource(soundHandler.setVolume(0.5f)).startAll();
