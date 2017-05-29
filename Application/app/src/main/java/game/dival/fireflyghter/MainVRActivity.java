@@ -47,8 +47,8 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         gameEngine.addCamera(camera);
 
         bird = new Entity("bird");
-        bird.addComponent(new Transformation(0, 5f, -6));
-        bird.addComponent(new Model3D("bird", gameEngine));
+        bird.addComponent(new Transformation(0, 50f, -100));
+        bird.addComponent(new Model3D("bird", gameEngine, new Color(0.7f, 0.0f, 0.0f, 1.0f)));
         gameEngine.entities.add(bird);
 
         Entity island = new Entity("island");
@@ -72,8 +72,8 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         sun.addComponent(new Model3D("sphere", gameEngine, new Color(1f, 1f, 0.0f, 1f)));
         gameEngine.entities.add(sun);
 
-        RandomElements.addRandomPines(100, 30, gameEngine);
-        RandomElements.addRandomclouds(10,50,50,gameEngine);
+        RandomElements.addRandomPines(50, 30, gameEngine);
+        RandomElements.addRandomclouds(10,50,20,gameEngine);
 
         soundHandler = new SoundHandler("lost-within.mp3", true);
         audioLibrary.addStereoSource(soundHandler.setVolume(0.5f)).startAll();

@@ -24,6 +24,8 @@ public class RandomElements {
         for (int i = 0; i <= numerOfPines; i++) {
             Entity pine = new Entity("pine" + i); // Create PINE
             Transformation transformation = new Transformation();
+            float scale = (float) randDouble(1, 4);
+            transformation.setScale(scale, scale, scale);
             transformation.setTranslation((float) randDouble(-distance, distance), 0, (float) randDouble(-distance, distance));
             pine.addComponent(new Model3D("pine", engine, new Color(0.0f, 1.0f, 0.0f, 1.0f)));
             pine.addComponent(transformation); //add translation, scale, rotation
@@ -36,7 +38,7 @@ public class RandomElements {
             Entity cloud = new Entity("cloud" + i); // Create PINE
             Transformation transformation = new Transformation();
             transformation.setTranslation((float) randDouble(-distance, distance), (float) randDouble(initialZ, initialZ + 20), (float) randDouble(-distance, distance));
-            float scale = (float) randDouble(2, 20);
+            float scale = (float) randDouble(2, 5);
             transformation.setScale(scale, scale, scale);
             cloud.addComponent(new Model3D("cloud", engine, new Color(1f,1f,1f,1f)));
             cloud.addComponent(transformation); //add translation, scale, rotation
