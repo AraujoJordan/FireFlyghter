@@ -28,6 +28,7 @@ public class Model3D extends Component {
     private ArrayList<Vector3D> normals;
 
     private GameEngine engine;
+    private Color color = null;
 
     public Model3D(String resourceLabel, GameEngine engine) {
         super();
@@ -43,6 +44,23 @@ public class Model3D extends Component {
         this.depth = obj3D.getDepth();
         this.centerOfModel = obj3D.center;
         this.engine = engine;
+    }
+
+    public Model3D(String resourceLabel, GameEngine engine, Color color) {
+        super();
+
+        GameResources.Object3D obj3D = engine.resouces.get3DModel(resourceLabel);
+
+        tempTriangles = new ArrayList<>();
+        normals = new ArrayList<>();
+        tempTriangles.addAll(obj3D.faces);
+        normals.addAll(obj3D.vnormals);
+        this.width = obj3D.getWidth();
+        this.height = obj3D.getHeight();
+        this.depth = obj3D.getDepth();
+        this.centerOfModel = obj3D.center;
+        this.engine = engine;
+        this.color = color;
     }
 
     public Model3D(Entity entity, String resourceLabel, GameEngine engine) {
@@ -118,7 +136,9 @@ public class Model3D extends Component {
             vert.add(triplePixel[1]);
             vert.add(triplePixel[2]);
         }
-        shape = new ModelDrawVR(vert, normals, engine, parentEntity);
+
+        shape = new ModelDrawVR(vert, normals, engine, parentEntity, color);
+
 
         vert.clear();
         vert = null;

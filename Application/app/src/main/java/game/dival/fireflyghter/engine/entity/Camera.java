@@ -61,7 +61,7 @@ public class Camera extends Entity {
 //            Log.d("conLook", Arrays.toString(euler));
 
             //ROTATE THE BIRD
-            entityToFollowCamera.getTransformation().setRotation(new Vector3D(0,(euler[1]+180),0f));
+            entityToFollowCamera.getTransformation().setRotation(new Vector3D(0,(euler[1]),0f));
 
             //MOVE THE BIRD
             Vector3D birdPos = new Vector3D(camTrans.xyz[0],camTrans.xyz[1],camTrans.xyz[2]);

@@ -11,7 +11,9 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import game.dival.fireflyghter.R;
 import game.dival.fireflyghter.engine.GameEngine;
@@ -43,7 +45,7 @@ public class ModelDrawVR implements Draw {
     private final int modelModelViewProjectionParam;
     private final int modelLightPosParam;
 
-    private float color[] = {0.1f, 0.6f, 0.1f, 1.0f};
+    private float color[] = {0.1f, 1.0f, 0.1f, 1.0f};
     private int vertexCount;
 
     private Entity entity;
@@ -54,7 +56,7 @@ public class ModelDrawVR implements Draw {
      *
      * @param pixels
      */
-    public ModelDrawVR(ArrayList<Vector3D> pixels, ArrayList<Vector3D> normal, GameEngine engine, Entity entity) {
+    public ModelDrawVR(ArrayList<Vector3D> pixels, ArrayList<Vector3D> normal, GameEngine engine, Entity entity, Color colorObj) {
         this.entity = entity;
         this.engine = (VREngine) engine;
 
@@ -77,71 +79,15 @@ public class ModelDrawVR implements Draw {
             normalCoords[index++] = normalVert.xyz[1];
             normalCoords[index++] = normalVert.xyz[2];
         }
-//        int j = 0;
-//        for (int face = 0; face < pixels.size(); face += 3) {
-//            Vector3D v1 = pixels.get(face);
-//            Vector3D v2 = pixels.get(face + 1);
-//            Vector3D v3 = pixels.get(face + 2);
-//
-//            Vector3D vu = v3.sub(v1);
-//            Vector3D vt = v2.sub(v1);
-//
-//            Vector3D normal = vt.cross(vu);
-//            normal.normalize();
-//
-//            if(normalCoords[j] != 0)
-//                normalCoords[j++] = (normalCoords[j] + normal.getX())/2;
-//            normalCoords[j++] = normal.getX();
-//
-//            if(normalCoords[j] != 0)
-//                normalCoords[j++] = (normalCoords[j] + normal.getY())/2;
-//            normalCoords[j++] = normal.getY();
-//
-//            if(normalCoords[j] != 0)
-//                normalCoords[j++] = (normalCoords[j] + normal.getZ())/2;
-//            normalCoords[j++] = normal.getZ();
-//
-//
-//            if(normalCoords[j] != 0)
-//                normalCoords[j++] = (normalCoords[j] + normal.getX())/2;
-//            normalCoords[j++] = normal.getX();
-//
-//            if(normalCoords[j] != 0)
-//                normalCoords[j++] = (normalCoords[j] + normal.getY())/2;
-//            normalCoords[j++] = normal.getY();
-//
-//            if(normalCoords[j] != 0)
-//                normalCoords[j++] = (normalCoords[j] + normal.getZ())/2;
-//            normalCoords[j++] = normal.getZ();
-//
-//
-//            if(normalCoords[j] != 0)
-//                normalCoords[j++] = (normalCoords[j] + normal.getX())/2;
-//            normalCoords[j++] = normal.getX();
-//
-//            if(normalCoords[j] != 0)
-//                normalCoords[j++] = (normalCoords[j] + normal.getY())/2;
-//            normalCoords[j++] = normal.getY();
-//
-//            if(normalCoords[j] != 0)
-//                normalCoords[j++] = (normalCoords[j] + normal.getZ())/2;
-//            normalCoords[j++] = normal.getZ();
-//
-////            normalCoords[j++] = normal.getX();
-////            normalCoords[j++] = normal.getY();
-////            normalCoords[j++] = normal.getZ();
-////
-////            normalCoords[j++] = normal.getX();
-////            normalCoords[j++] = normal.getY();
-////            normalCoords[j++] = normal.getZ();
-////
-////            normalCoords[j++] = normal.getX();
-////            normalCoords[j++] = normal.getY();
-////            normalCoords[j++] = normal.getZ();
-//        }
+
 
 
         //COLOR
+        if (colorObj != null) {
+            color = colorObj.getFloatRGBA();
+        }
+
+        Log.d("Color",Arrays.toString(color));
         float[] colorCoords = new float[pixels.size() * 4];
         index = 0;
         for (int i = 0; i < pixels.size(); i++) {

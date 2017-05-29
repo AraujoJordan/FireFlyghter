@@ -45,6 +45,24 @@ public class Transformation extends Component {
         hasScale = true;
     }
 
+    /**
+     * Create a transformation with X Y Z translation
+     * @param x position in space
+     * @param y position in space
+     * @param z position in space
+     */
+    public Transformation(float x, float y, float z) {
+        super();
+        translation = new Vector3D(x, y, z);
+        rotation = new Vector3D(1f, 1f, 1f);
+        scale = new Vector3D(1f, 1f, 1f);
+        Matrix.setIdentityM(modelMatrix, 0);
+
+        hasTranslation = true;
+        hasRotation = true;
+        hasScale = true;
+    }
+
 
     /**
      * Criação da modelMatrix
