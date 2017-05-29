@@ -17,7 +17,6 @@ import game.dival.fireflyghter.engine.sound.AudioLibrary;
 import game.dival.fireflyghter.engine.sound.SoundHandler;
 import game.dival.fireflyghter.engine.utils.RandomElements;
 
-
 public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates {
 
     private VREngine gameEngine;
@@ -63,14 +62,14 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         waterTrans = new Transformation();
         waterTrans.setScale(100000f, 1f, 100000f);
         water.addComponent(waterTrans);
-        water.addComponent(new Model3D("plane", gameEngine, new Color(0.0f, 0.4f, 0.6f, 1f)));
+        water.addComponent(new Model3D("plane", gameEngine, new Color(0.5f, 0.5f, 1f, 1f)));
         gameEngine.entities.add(water);
 
         Entity sun = new Entity("sun");
         Transformation sunTrans = new Transformation(250f, 260f, 260f);
         sunTrans.setScale(50f,50f,50f);
         sun.addComponent(sunTrans);
-        sun.addComponent(new Model3D("sphere", gameEngine, new Color(0.9f, 0.7f, 0.0f, 1f)));
+        sun.addComponent(new Model3D("sphere", gameEngine, new Color(1f, 1f, 0.0f, 1f)));
         gameEngine.entities.add(sun);
 
         RandomElements.addRandomPines(100, 30, gameEngine);

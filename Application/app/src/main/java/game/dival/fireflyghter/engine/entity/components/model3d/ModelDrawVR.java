@@ -70,12 +70,13 @@ public class ModelDrawVR implements Draw {
 
         //NORMAL
         float[] normalCoords = new float[vertCoords.length];
-        index = 0;
-        for (Vector3D normalVert : normal) {
-            normalCoords[index++] = normalVert.xyz[0];
-            normalCoords[index++] = normalVert.xyz[1];
-            normalCoords[index++] = normalVert.xyz[2];
-        }
+        normalCoords = createNormals(pixels, normalCoords);
+//        index = 0;
+//        for (Vector3D normalVert : normal) {
+//            normalCoords[index++] = normalVert.xyz[0];
+//            normalCoords[index++] = normalVert.xyz[1];
+//            normalCoords[index++] = normalVert.xyz[2];
+//        }
 
         //COLOR
         if (colorObj != null) {
@@ -178,6 +179,88 @@ public class ModelDrawVR implements Draw {
         GLES30.glDisableVertexAttribArray(modelColorParam);
 
         GLUtils.checkGlError("Drawing model");
+    }
+
+    private float[] createNormals(ArrayList<Vector3D> pixels, float[] normalCoords) {
+
+        ArrayList<Vector3D> faceList = new ArrayList<>();
+
+        //Create surfaceNormal
+        int j = 0;
+        for (int faceIndex = 0; faceIndex < pixels.size(); faceIndex += 3) {
+            Vector3D v1 = pixels.get(faceIndex);
+            Vector3D v2 = pixels.get(faceIndex + 1);
+            Vector3D v3 = pixels.get(faceIndex + 2);
+
+            Vector3D vu = v3.sub(v1);
+            Vector3D vt = v2.sub(v1);
+
+            Vector3D normal = vt.cross(vu);
+            normal.normalize();
+
+            faceList.add(normal);
+            faceList.add(normal);
+            faceList.add(normal);
+        }
+
+        //Smoothing surface normals into vertice normals
+//        ArrayList<Vector3D> alreadyCheck = new ArrayList<>();
+//        for (int faceGroup = 0; faceGroup < pixels.size(); faceGroup += 3) { //Para cada face
+//            for (int faceIndex = faceGroup; faceIndex < faceGroup + 3; faceIndex++) { // Para cada vertice da face
+//                Vector3D faceVertex = pixels.get(faceIndex);
+//                if (!alreadyCheck.contains(faceVertex)) { //vertice ja adicionado?
+//
+//                    ArrayList<Integer> facesIndexWithThatVertice = new ArrayList<>();
+//                    alreadyCheck.add(faceVertex);
+//                    for (int faceGroupSearch = 0; faceGroupSearch < pixels.size(); faceGroupSearch += 3) { //procurar pelo vertice em outras faces
+//
+//                        //no primeiro vertice
+//                        if (faceGroupSearch == faceIndex) //vertice ja adicionado
+//                            continue;
+//                        if (pixels.get(faceGroupSearch) == faceVertex) {
+//                            facesIndexWithThatVertice.add(faceGroupSearch); // adiciona face para media
+//                            break;
+//                        }
+//
+//                        //no segundo vertice
+//                        if (faceGroupSearch + 1 == faceIndex) //vertice ja adicionado
+//                            continue;
+//                        if (pixels.get(faceGroupSearch + 1) == faceVertex) {
+//                            facesIndexWithThatVertice.add(faceGroupSearch); // adiciona face para media
+//                            break;
+//                        }
+//
+//                        //no terceiro vertice
+//                        if (faceGroupSearch + 2 == faceIndex) //vertice ja adicionado
+//                            continue;
+//                        if (pixels.get(faceGroupSearch + 2) == faceVertex) {
+//                            facesIndexWithThatVertice.add(faceGroupSearch); // adiciona face para media
+//                        }
+//                    }
+//
+//                    Vector3D normalizedVert = new Vector3D(0,0,0);
+//                    for (Integer faceToNormalize : facesIndexWithThatVertice) { //Pega normais dos vertices
+//                        Vector3D normalOfThatVert = faceList.get(faceToNormalize);
+//                        normalizedVert = normalizedVert.add(normalOfThatVert).normalize(); // faz a media para cada face
+//                    }
+//                    for (Integer faceToNormalize : facesIndexWithThatVertice) { //aplica a normal suave em cada vertice
+//                        faceList.set(faceToNormalize,normalizedVert.add(faceList.get(faceToNormalize).normalize()));
+//                        faceList.set(faceToNormalize+1,normalizedVert.add(faceList.get(faceToNormalize+1).normalize()));
+//                        faceList.set(faceToNormalize+2,normalizedVert.add(faceList.get(faceToNormalize+2).normalize()));
+//                    }
+//
+//                }
+//            }
+//        }
+
+        //Add normals into float
+        for(Vector3D normal:faceList) {
+            normalCoords[j++] = normal.getX();
+            normalCoords[j++] = normal.getY();
+            normalCoords[j++] = normal.getZ();
+        }
+
+        return normalCoords;
     }
 
     public void setColor(Color color) {

@@ -48,13 +48,15 @@ public class Vector3D {
     /**
      * Normalize the 3d vector in place
      */
-    public void normalize() {
+    public Vector3D normalize() {
         float lenthNorm = length();
         lenthNorm = lenthNorm < 0 ? -lenthNorm : lenthNorm; //norm
 
         xyz[0] = xyz[0] / lenthNorm;
         xyz[1] = xyz[1] / lenthNorm;
         xyz[2] = xyz[2] / lenthNorm;
+
+        return this;
     }
 
     /**
