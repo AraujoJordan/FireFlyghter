@@ -26,7 +26,7 @@ public class VrActivity extends GvrActivity implements GvrView.StereoRenderer {
 
     private static final float Z_NEAR = 0.5f;
     private static final float Z_FAR = 1000f;
-    public float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{0f, 10f, 0.0f, 1.0f};
+    public float[] LIGHT_POS_IN_WORLD_SPACE = new float[]{200f, 200f, 200f, 1.0f};
     public static float[] mViewMatrix = new float[16];
     public static float[] mProjectionViewMatrix = new float[16];
     public static float[] mLightEyeMatrix = new float[16];

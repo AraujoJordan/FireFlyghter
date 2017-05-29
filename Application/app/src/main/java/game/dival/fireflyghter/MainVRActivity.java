@@ -1,6 +1,7 @@
 package game.dival.fireflyghter;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.GameResources;
@@ -11,6 +12,7 @@ import game.dival.fireflyghter.engine.entity.Camera;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
 import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
+import game.dival.fireflyghter.engine.math.Vector3D;
 import game.dival.fireflyghter.engine.sound.AudioLibrary;
 import game.dival.fireflyghter.engine.sound.SoundHandler;
 import game.dival.fireflyghter.engine.utils.RandomElements;
@@ -59,7 +61,7 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         gameEngine.entities.add(water);
 
         Entity sun = new Entity("sun");
-        sun.addComponent(new Transformation(0, -50, 0));
+        sun.addComponent(new Transformation(201f, 201f, 201f));
         sun.addComponent(new Model3D("sphere", gameEngine, new Color(0.9f, 0.7f, 0.0f, 1f)));
         gameEngine.entities.add(sun);
 
@@ -82,4 +84,27 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         audioLibrary.pauseAll();
         finish();
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Camera cam = gameEngine.getCamera();
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
+            Vector3D fowardDirection = cam.getLookDirection();
+            cam.getTransformation().setTranslation(
+                    cam.getTransformation().getTranslation().xyz[0] - fowardDirection.getX(),
+                    cam.getTransformation().getTranslation().xyz[1] - fowardDirection.getY(),
+                    cam.getTransformation().getTranslation().xyz[2] - fowardDirection.getZ()
+            );
+        }
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP)) {
+            Vector3D fowardDirection = cam.getLookDirection();
+            cam.getTransformation().setTranslation(
+                    cam.getTransformation().getTranslation().xyz[0] + fowardDirection.getX(),
+                    cam.getTransformation().getTranslation().xyz[1] + fowardDirection.getY(),
+                    cam.getTransformation().getTranslation().xyz[2] + fowardDirection.getZ()
+            );
+        }
+        return true;
+    }
+
 }
