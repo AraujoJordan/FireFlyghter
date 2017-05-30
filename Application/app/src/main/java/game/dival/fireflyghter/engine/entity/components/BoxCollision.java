@@ -1,30 +1,31 @@
 package game.dival.fireflyghter.engine.entity.components;
 
 
-import android.os.AsyncTask;
+import java.util.ArrayList;
 
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.entity.Entity;
+import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 import game.dival.fireflyghter.engine.math.Vector3D;
 
 /**
  * Created by arauj on 05/03/2017.
- *
+ * <p>
  * Axis Aligned Bounding Box (AABB)
- *
+ * <p>
  * Basically its the smallest Cuboid that can completely contain the shape, usually defined by a pair of 3d co-ordinates.
- *
  */
 
-public class BoxCollision extends Collision {
+public class BoxCollision extends Component {
 
-    // Optimization of Entity access
-    private int transPropIndex = -1;
-    private int modelPropIndex = -1;
+    //Entities list to check collision (do not add all for the god sake)
+    protected ArrayList<Entity> entitiesToCollide;
+    protected CollisionListener trigger;
+    public Vector3D[] edges;
 
-    private float fixedWidth = -1;
-    private float fixedHeight = -1;
-    private float fixedDepth = -1;
+    private float fixedWidth = 0;
+    private float fixedHeight = 0;
+    private float fixedDepth = 0;
 
     //boolean
     private boolean hasFixedPosition;
@@ -36,110 +37,94 @@ public class BoxCollision extends Collision {
      */
     public BoxCollision(Entity parentEntity, boolean hasFixedPosition) {
         super(parentEntity);
+
+        entitiesToCollide = new ArrayList<>();
         edges = new Vector3D[6];
+        for (int i = 0; i < edges.length; i++) {
+            edges[i] = new Vector3D(0, 0, 0);
+        }
+
         this.hasFixedPosition = hasFixedPosition;
-//        if (hasFixedPosition)
-//            updateBoxPosition();
+        updateBoxPosition();
 
     }
 
     public BoxCollision(boolean hasFixedPosition) {
         super();
+
+        entitiesToCollide = new ArrayList<>();
         edges = new Vector3D[6];
+        for (Vector3D vector3D : edges)
+            vector3D = new Vector3D();
+
         this.hasFixedPosition = hasFixedPosition;
-//        if (hasFixedPosition)
-//            updateBoxPosition();
+        updateBoxPosition();
 
     }
 
 
-//    /**
-//     * Update the box collider position (call it wisely)
-//     */
-//    private void updateBoxPosition() {
-//        try {
-//            transPropIndex = parentEntity.getTransformation(transPropIndex);
-//            modelPropIndex = parentEntity.getModel3D(modelPropIndex);
-//        } catch (NullPointerException npe) {
-//            throw new RuntimeException("Error on " + getClass().getCanonicalName() + " updateIndex() method: " + npe.getMessage());
-//        }
-//
-//        Transformation transformation = (Transformation) parentEntity.components.get(transPropIndex);
-//        Vector3D translation = transformation.translation;
-//
-//        if (fixedWidth == -1 || fixedHeight == -1 || fixedDepth == -1) { //init box size
-//            Model3D model3D = (Model3D) parentEntity.components.get(modelPropIndex);
-//            fixedWidth = model3D.width;
-//            fixedHeight = model3D.height;
-//            fixedDepth = model3D.depth;
-//        }
-//
-//        //init box edges (if was not initialized yet)
-//        if (edges[0] == null)
-//            for (int i = 0; i < edges.length; i++)
-//                edges[i] = new Vector3D();
-//
-//        //update edges
-//        edges[0].xyz = new float[]{translation.xyz[0], translation.xyz[1] + fixedHeight / 2, translation.xyz[2]};//UP
-//        edges[1].xyz = new float[]{translation.xyz[0], translation.xyz[1] - fixedHeight / 2, translation.xyz[2]};//DOWN
-//        edges[2].xyz = new float[]{translation.xyz[0] + fixedHeight / 2, translation.xyz[1], translation.xyz[2]};//LEFT
-//        edges[3].xyz = new float[]{translation.xyz[0] - fixedHeight / 2, translation.xyz[1], translation.xyz[2]};//RIGHT
-//        edges[4].xyz = new float[]{translation.xyz[0], translation.xyz[1], translation.xyz[2] + fixedHeight / 2};//FRONT
-//        edges[5].xyz = new float[]{translation.xyz[0], translation.xyz[1], translation.xyz[2] - fixedHeight / 2};//BACK
-//
-//    }
+    /**
+     * Update the box collider position (call it wisely)
+     */
+    private void updateBoxPosition() {
+        if (parentEntity.getModel3D() == null || parentEntity.getTransformation() == null)
+            return;
+
+        Vector3D scale = parentEntity.getTransformation().getScale();
+
+        Model3D model3D = parentEntity.getModel3D();
+        fixedWidth = model3D.getWidth() * scale.getX();
+        fixedHeight = model3D.getHeight() * scale.getY();
+        fixedDepth = model3D.getDepth() * scale.getZ();
+
+    }
 
     @Override
     public void run(GameEngine engine) {
-//        if (!hasFixedPosition)
-//            updateBoxPosition();
-//        checkForCollision();
+        if (!hasFixedPosition)
+            updateBoxPosition();
+        checkForCollision();
     }
 
     /**
      * Async method to detect collision
      */
     public void checkForCollision() {
-        int processorCores = Runtime.getRuntime().availableProcessors();
-        int entitiesByCore = entitiesToCollide.size() / processorCores;
-        int entitiesRest = entitiesToCollide.size() % processorCores;
 
-        int index = 0;
-        for (int coreIndex = 0; coreIndex < processorCores; coreIndex++) {
-            Entity[] list = new Entity[entitiesByCore];
-            for (int entIndex = (coreIndex == processorCores - 1 ? entitiesByCore + entitiesRest : entitiesByCore);
-                 entIndex > 0; entIndex++) {
-                list[entIndex] = entitiesToCollide.get(index);
-            }
-            new CheckForCollision().doInBackground(list);
+        Vector3D thisTrans = parentEntity.getTransformation().getTranslation();
+
+        for (Entity entity : entitiesToCollide) {
+            BoxCollision otherBox = entity.getBoxCollision();
+            Vector3D otherTrans = entity.getTransformation().getTranslation();
+
+            float wdist = thisTrans.xyz[0] - otherTrans.xyz[0];
+            wdist = wdist >= 0f ? wdist : -wdist;
+            float hdist = thisTrans.xyz[1] - otherTrans.xyz[1];
+            hdist = hdist >= 0f ? hdist : -hdist;
+            float ddist = thisTrans.xyz[2] - otherTrans.xyz[2];
+            ddist = ddist >=0f ? ddist : -ddist;
+
+            if (wdist <= ((fixedWidth / 2) + (otherBox.fixedWidth / 2)) &&
+                    hdist <= ((fixedHeight / 2) + (otherBox.fixedHeight / 2)) &&
+                    ddist <= ((fixedDepth / 2) + (otherBox.fixedDepth / 2)))
+                trigger.onCollision(parentEntity, entity);
         }
     }
 
-    private class CheckForCollision extends AsyncTask<Entity, Entity, Void> {
+    public void addCollisionListener(Entity entity, CollisionListener trigger) {
+        entitiesToCollide.add(entity);
+        this.trigger = trigger;
+    }
 
-        protected Void doInBackground(Entity... entities) {
-            for (Entity entityToCollide : entities) {
-                if (isCancelled()) break;
+    public void removerCollisionListener(Entity entity) {
+        entitiesToCollide.remove(entity);
+    }
 
-                BoxCollision otherBox = entityToCollide.getBoxCollision();
+    public void clearCollidesListener() {
+        entitiesToCollide.clear();
+    }
 
-                if (!(edges[2].xyz[0] > otherBox.edges[3].xyz[0] || // THIS LEFT EDGE > OTHER RIGHT EDGE
-                        edges[3].xyz[0] < otherBox.edges[2].xyz[0]) || // THIS RIGHT EDGE < OTHER LEFT EDGE
-                        edges[0].xyz[1] < otherBox.edges[1].xyz[1] || // THIS TOP EDGE > OTHER BOTTOM EDGE
-                        edges[1].xyz[1] > otherBox.edges[0].xyz[1] || // THIS BOTTOM EDGE < OTHER TOP EDGE
-                        edges[4].xyz[2] > otherBox.edges[5].xyz[2] || // THIS FRONT EDGE > OTHER BACK EDGE
-                        edges[5].xyz[2] < otherBox.edges[4].xyz[2]) { // THIS BACK EDGE < OTHER FRONT EDGE
-                    //OBS, THIS IS IN CARTESIAN, TO INVERT THE Y, CONSULT THIS LINK http://gamedev.stackexchange.com/a/913
-                    publishProgress(entityToCollide);
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(Entity... entity) {
-            super.onProgressUpdate(entity);
-            trigger.onCollision(parentEntity, entity[0]);
-        }
+    public interface CollisionListener {
+        void onCollision(Entity entity1, Entity entity2);
     }
 }

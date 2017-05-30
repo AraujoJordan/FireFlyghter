@@ -108,7 +108,7 @@ public class GameResources {
                     float z = Float.valueOf(tokens[3]);
                     Pixel vertex = new Pixel(x, y, z);
 
-                    if (vertexNumber == 1) {
+                    if (vertexNumber++ == 1) {
                         minWidth = maxWidth = x;
                         minHeight = maxHeight = y;
                         minDepth = maxDepth = z;
@@ -166,9 +166,12 @@ public class GameResources {
                     faces.add(face);
                 }
             }
+
             width = maxWidth - minWidth;
             height = maxHeight - minHeight;
             depth = maxDepth - minDepth;
+
+
 
             center = new Vector3D((maxWidth - minWidth) / 2, (maxHeight - minHeight) / 2, (maxDepth - minDepth) / 2);
 

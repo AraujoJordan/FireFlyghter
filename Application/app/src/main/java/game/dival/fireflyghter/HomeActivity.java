@@ -78,7 +78,5 @@ public class HomeActivity extends Activity {
     protected void onPause() {
         super.onPause();
         library.pauseAll();
-        finish();
     }
-
 }
