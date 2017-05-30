@@ -29,9 +29,12 @@ public class Model3D extends Component {
 
     private GameEngine engine;
     private Color color = null;
+    public String resourceLabel;
 
     public Model3D(String resourceLabel, GameEngine engine) {
         super();
+
+        this.resourceLabel = resourceLabel;
 
         GameResources.Object3D obj3D = engine.resouces.get3DModel(resourceLabel);
 
@@ -48,6 +51,8 @@ public class Model3D extends Component {
 
     public Model3D(String resourceLabel, GameEngine engine, Color color) {
         super();
+
+        this.resourceLabel = resourceLabel;
 
         GameResources.Object3D obj3D = engine.resouces.get3DModel(resourceLabel);
 

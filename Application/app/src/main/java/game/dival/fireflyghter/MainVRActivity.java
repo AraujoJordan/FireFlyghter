@@ -1,7 +1,11 @@
 package game.dival.fireflyghter;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.KeyEvent;
+
+import java.util.Iterator;
 
 import game.dival.fireflyghter.engine.GameEngine;
 import game.dival.fireflyghter.engine.GameResources;
@@ -25,9 +29,9 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
     private Camera camera;
     private AudioLibrary audioLibrary;
     private SoundHandler soundHandler;
-    private float acceleration = 0.3f;
-    private final float MAX_SPEED = 1.0f;
-    private final float MIN_SPEED = 0.3f;
+    private float acceleration = 0.5f;
+    private final float MAX_SPEED = 1.5f;
+    private final float MIN_SPEED = 0.0000001f;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,13 +55,13 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         gameEngine.addCamera(camera);
 
         bird = new Entity("bird");
-        bird.addComponent(new Transformation(0, 50f, -100));
+        bird.addComponent(new Transformation(0, 80f, -150f));
         bird.addComponent(new Model3D("bird", gameEngine, new Color(0.7f, 0.0f, 0.0f, 1.0f)));
         gameEngine.entities.add(bird);
 
         Entity island = new Entity("island");
         Transformation islandTrans = new Transformation(0,0,0);
-        islandTrans.setScale(100f,1f,100f);
+        islandTrans.setScale(150f,1f,150f);
         island.addComponent(islandTrans);
         island.addComponent(new Model3D("sphere",gameEngine));
         gameEngine.entities.add(island);
@@ -78,30 +82,50 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
 
         Entity tree = new Entity("tree");
         Transformation treeTrans = new Transformation(0f, 0f, 0f);
-        sunTrans.setScale(0.2f,0.2f,0.2f);
+        treeTrans.setScale(0.9f,0.9f,0.9f);
         tree.addComponent(treeTrans);
         tree.addComponent(new Model3D("bigTree", gameEngine, new Color(1f, 1f, 0.0f, 1f)));
         gameEngine.entities.add(tree);
 
-        RandomElements.addRandomPines(50, 30, gameEngine);
-        RandomElements.addRandomclouds(10, 50, 20, gameEngine);
+        RandomElements.addRandomPines(75, 100, gameEngine);
+        RandomElements.addRandomclouds(15, 100, 30, gameEngine);
 
         soundHandler = new SoundHandler("lost-within.mp3", true);
         audioLibrary.addStereoSource(soundHandler.setVolume(0.5f)).startAll();
 
         camera.follow(bird);
+
+        new CountDownTimer(10000, 10000) {
+            @Override
+            public void onFinish() {
+                for (int i = 0; i < gameEngine.entities.size(); i++) {
+                    Entity e = gameEngine.entities.get(i);
+                    if (e.label.equals("tree")) {
+                        Entity cpy = copyEntity(e, new Color(0f,0f,0f,1f));
+                        gameEngine.entities.remove(e);
+                        gameEngine.entities.add(cpy);
+                    }
+                }
+            }
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+        }.start();
     }
 
     private void fetchAcceleration(Vector3D direction) {
         if (direction.xyz[1] > 0f) {
-            if (acceleration - 0.02f > MIN_SPEED) {
-                acceleration -= 0.02f;
+            if (acceleration - 0.007f > MIN_SPEED) {
+                acceleration -= 0.007f;
             }
         } else if (direction.xyz[1] < 0f) {
             if (acceleration + 0.02f < MAX_SPEED) {
                 acceleration += 0.02f;
             }
         }
+        Log.e("Acceleration", "" + acceleration);
     }
 
     @Override
@@ -115,6 +139,13 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         super.onPause();
         audioLibrary.pauseAll();
         finish();
+    }
+
+    private Entity copyEntity(Entity copy, Color color) {
+        Entity tree = new Entity(copy.label);
+        tree.addComponent(copy.getTransformation());
+        tree.addComponent(new Model3D(copy.getModel3D().resourceLabel, gameEngine, color));
+        return tree;
     }
 
     @Override
