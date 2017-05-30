@@ -10,6 +10,7 @@ import game.dival.fireflyghter.engine.VrActivity;
 import game.dival.fireflyghter.engine.draw.Color;
 import game.dival.fireflyghter.engine.entity.Camera;
 import game.dival.fireflyghter.engine.entity.Entity;
+import game.dival.fireflyghter.engine.entity.components.Particles;
 import game.dival.fireflyghter.engine.entity.components.Transformation;
 import game.dival.fireflyghter.engine.entity.components.model3d.Model3D;
 import game.dival.fireflyghter.engine.math.Vector3D;
@@ -82,6 +83,14 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         tree.addComponent(treeTrans);
         tree.addComponent(new Model3D("bigTree", gameEngine, new Color(1f, 1f, 0.0f, 1f)));
         gameEngine.entities.add(tree);
+
+        Entity particle = new Entity("particula");
+        Transformation particleTrans = new Transformation(0f, 20f, 0f);
+        particleTrans.setScale(1f,1f,1f);
+        particle.addComponent(particleTrans);
+        particle.addComponent(new Particles(this, gameEngine));
+        //gameEngine.entities.add(particle);
+
 
         RandomElements.addRandomPines(50, 30, gameEngine);
         RandomElements.addRandomclouds(10, 50, 20, gameEngine);
