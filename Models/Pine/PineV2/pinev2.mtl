@@ -1,0 +1,7 @@
+# Exported from 3D Builder
+
+newmtl leaf
+Kd 0.070588 0.588235 0.200000
+
+newmtl log
+Kd 0.588235 0.388235 0.070588
