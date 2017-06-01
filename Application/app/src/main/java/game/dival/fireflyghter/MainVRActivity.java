@@ -46,12 +46,12 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
 
         // EXAMPLE OF PINE TREE ON DivaEngine
         GameResources resources = new GameResources();
-        resources.addOBJ(this, "pine", "pine.obj");
-        resources.addOBJ(this, "bigTree", "arvoreGiant.obj");
-        resources.addOBJ(this, "sphere", "sphere.obj");
+        resources.addOBJ(this, "pine", "pine-flat.obj");
+        resources.addOBJ(this, "bigTree", "arvoreGiant-flat.obj");
+        resources.addOBJ(this, "sphere", "sphere-flat.obj");
         resources.addOBJ(this, "plane", "plane.obj");
-        resources.addOBJ(this, "cloud", "cloud4tex.obj");
-        resources.addOBJ(this, "bird", "bird2.obj");
+        resources.addOBJ(this, "cloud", "testCloudTex.obj");
+        resources.addOBJ(this, "bird", "bird-flat.obj");
         resources.loadTexture(this,"cloudText",R.drawable.brmarble);
 
         gameEngine = new VREngine(this, resources, this);
