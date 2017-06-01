@@ -40,7 +40,7 @@ public class RandomElements {
             transformation.setTranslation((float) randDouble(-distance, distance), (float) randDouble(initialZ, initialZ + 20), (float) randDouble(-distance, distance));
             float scale = (float) randDouble(2, 5);
             transformation.setScale(scale, scale, scale);
-            cloud.addComponent(new Model3D("cloud", engine, new Color(1f,1f,1f,1f)));
+            cloud.addComponent(new Model3D("cloud","cloudText", engine, new Color(1f,1f,1f,1f)));
             cloud.addComponent(transformation); //add translation, scale, rotation
             engine.entities.add(cloud);
         }

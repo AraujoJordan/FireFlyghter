@@ -24,6 +24,7 @@ public class Model3D extends Component {
     private final GameResources.Object3D obj3D;
 
     private ModelDrawVR shape;
+    private int textureID;
 
     private GameEngine engine;
     private Color color = null;
@@ -49,6 +50,37 @@ public class Model3D extends Component {
         this.resourceLabel = resourceLabel;
 
         obj3D = engine.resouces.get3DModel(resourceLabel);
+
+        this.width = obj3D.getWidth();
+        this.height = obj3D.getHeight();
+        this.depth = obj3D.getDepth();
+        this.centerOfModel = obj3D.center;
+        this.engine = engine;
+        this.color = color;
+    }
+
+    public Model3D(String resourceLabel, String textureLabel, GameEngine engine) {
+        super();
+
+        this.resourceLabel = resourceLabel;
+
+        obj3D = engine.resouces.get3DModel(resourceLabel);
+        textureID = engine.resouces.getTextureID(textureLabel);
+
+        this.width = obj3D.getWidth();
+        this.height = obj3D.getHeight();
+        this.depth = obj3D.getDepth();
+        this.centerOfModel = obj3D.center;
+        this.engine = engine;
+    }
+
+    public Model3D(String resourceLabel, String textureLabel, GameEngine engine, Color color) {
+        super();
+
+        this.resourceLabel = resourceLabel;
+
+        obj3D = engine.resouces.get3DModel(resourceLabel);
+        textureID = engine.resouces.getTextureID(textureLabel);
 
         this.width = obj3D.getWidth();
         this.height = obj3D.getHeight();
@@ -87,7 +119,7 @@ public class Model3D extends Component {
         if (shape != null)
             return;
 
-        shape = new ModelDrawVR(obj3D, engine, parentEntity, color);
+        shape = new ModelDrawVR(obj3D,textureID, engine, parentEntity, color);
     }
 
     public void setColor(Color color) {

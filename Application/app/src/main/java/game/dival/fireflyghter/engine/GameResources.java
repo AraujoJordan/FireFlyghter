@@ -9,9 +9,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import game.dival.fireflyghter.engine.draw.Pixel;
 import game.dival.fireflyghter.engine.math.Vector3D;
+import game.dival.fireflyghter.engine.texture.TextureHelper;
 import game.dival.fireflyghter.engine.utils.BufferFactory;
 
 /**
@@ -23,10 +25,12 @@ public class GameResources {
 
     private Hashtable<String, Object3D> object3dList;
     private boolean isLoaded;
+    private Hashtable<String, Integer> textureList;
 
     public GameResources() {
         isLoaded = false;
-        object3dList = new Hashtable<String, Object3D>();
+        object3dList = new Hashtable<>();
+        textureList = new Hashtable<>();
 
     }
 
@@ -40,8 +44,22 @@ public class GameResources {
         }
     }
 
+    public void loadTexture(Activity act, String label, int res) {
+        if (isLoaded)
+            throw new RuntimeException("Can't create a texture object now, create before");
+        try {
+            textureList.put(label, TextureHelper.loadTexture(act, res));
+        } catch (Exception error) {
+            Log.e(getClass().getSimpleName(), "Can't create a texture object" + error.getMessage());
+        }
+    }
+
     public Object3D get3DModel(String idLabel) {
         return object3dList.get(idLabel);
+    }
+
+    public int getTextureID(String textureLabel) {
+        return textureList.get(textureLabel);
     }
 
     public void isLoaded() {
@@ -50,6 +68,7 @@ public class GameResources {
 
     public class Object3D {
         public final Vector3D center;
+        public  final int textureVTSize;
 
         public BufferFactory vertBuffer, normalBuffer, textureBuffer;
         public int vertSize = 0;
@@ -195,6 +214,7 @@ public class GameResources {
             tempVerts.clear();
 
             vertSize = vertFloats.size();
+            textureVTSize = textureFloats.size();
 
             vertBuffer = new BufferFactory(vertFloats);
             textureBuffer = new BufferFactory(textureFloats);
@@ -207,6 +227,8 @@ public class GameResources {
             center = new Vector3D((maxWidth - minWidth) / 2, (maxHeight - minHeight) / 2, (maxDepth - minDepth) / 2);
 
         }
+
+
 
         public float getWidth() {
             return width;

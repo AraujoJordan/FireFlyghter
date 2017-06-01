@@ -50,8 +50,9 @@ public class MainVRActivity extends VrActivity implements GameEngine.GameUpdates
         resources.addOBJ(this, "bigTree", "arvoreGiant.obj");
         resources.addOBJ(this, "sphere", "sphere.obj");
         resources.addOBJ(this, "plane", "plane.obj");
-        resources.addOBJ(this, "cloud", "cloud-flat.obj");
+        resources.addOBJ(this, "cloud", "cloud4tex.obj");
         resources.addOBJ(this, "bird", "bird2.obj");
+        resources.loadTexture(this,"cloudText",R.drawable.brmarble);
 
         gameEngine = new VREngine(this, resources, this);
 

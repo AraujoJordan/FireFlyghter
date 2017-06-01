@@ -34,6 +34,7 @@ public class ModelDrawVR implements Draw {
     private final FloatBuffer vertexBuffer;
     private final FloatBuffer normalBuffer;
     private final FloatBuffer colorBuffer;
+    private FloatBuffer textureBuffer = null;
 
     private final int mProgram;
     private final int modelPositionParam;
@@ -43,6 +44,11 @@ public class ModelDrawVR implements Draw {
     private final int modelModelViewParam;
     private final int modelModelViewProjectionParam;
     private final int modelLightPosParam;
+    private final int textureID;
+
+    private final int mTextureDataHandle;
+    private final int mTextureUniformHandle;
+    private final int mTextureCoordinateHandle;
 
     private float color[] = {0.1f, 1.0f, 0.1f, 1.0f};
     private int vertexCount;
@@ -53,8 +59,9 @@ public class ModelDrawVR implements Draw {
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
-    public ModelDrawVR(GameResources.Object3D obj3D, GameEngine engine, Entity entity, Color colorObj) {
+    public ModelDrawVR(GameResources.Object3D obj3D, int textureID, GameEngine engine, Entity entity, Color colorObj) {
         this.entity = entity;
+        this.textureID = textureID;
         this.engine = (VREngine) engine;
 
         //COLOR
@@ -76,11 +83,25 @@ public class ModelDrawVR implements Draw {
 
         vertexBuffer = obj3D.vertBuffer.getFloatBuffer();
         normalBuffer = obj3D.normalBuffer.getFloatBuffer();
+//        normalBuffer = new BufferFactory(createNormals()).getFloatBuffer();
         colorBuffer = new BufferFactory(colorCoords).getFloatBuffer();
 
+        if (obj3D.textureVTSize > 0) {
+            textureBuffer = obj3D.textureBuffer.getFloatBuffer();
+        }
+
+        int vertexShader;
+        int passthroughShader;
+
         // prepare shaders and OpenGL program
-        int vertexShader = loadGLShader(GLES30.GL_VERTEX_SHADER, R.raw.vertex_shader);
-        int passthroughShader = loadGLShader(GLES30.GL_FRAGMENT_SHADER, R.raw.fragment_shader);
+        if (obj3D.textureVTSize == 0) {
+            vertexShader = loadGLShader(GLES30.GL_VERTEX_SHADER, R.raw.vertex_shader);
+            passthroughShader = loadGLShader(GLES30.GL_FRAGMENT_SHADER, R.raw.fragment_shader);
+
+        } else {
+            vertexShader = loadGLShader(GLES30.GL_VERTEX_SHADER, R.raw.texture_vertex_shader);
+            passthroughShader = loadGLShader(GLES30.GL_FRAGMENT_SHADER, R.raw.texture_fragment_shader);
+        }
 
         mProgram = GLES30.glCreateProgram();
         GLES30.glAttachShader(mProgram, vertexShader);
@@ -96,6 +117,20 @@ public class ModelDrawVR implements Draw {
         modelModelViewParam = GLES30.glGetUniformLocation(mProgram, "u_MVMatrix");
         modelModelViewProjectionParam = GLES30.glGetUniformLocation(mProgram, "u_MVP");
         modelLightPosParam = GLES30.glGetUniformLocation(mProgram, "u_LightPos");
+
+        if (obj3D.textureVTSize == 0) {
+            mTextureDataHandle = textureID;
+            mTextureUniformHandle = GLES30.glGetUniformLocation(mProgram, "u_Texture");
+            mTextureCoordinateHandle = GLES30.glGetAttribLocation(mProgram, "a_TexCoordinate");
+            GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, mTextureDataHandle);
+            GLES30.glUniform1i(mTextureUniformHandle, 0);
+        }
+        else {
+            mTextureDataHandle = -1;
+            mTextureUniformHandle = -1;
+            mTextureCoordinateHandle = -1;
+        }
     }
 
     /**
@@ -131,6 +166,17 @@ public class ModelDrawVR implements Draw {
         GLES30.glVertexAttribPointer(modelNormalParam, 3, GLES30.GL_FLOAT, false, 0, normalBuffer);
         GLES30.glVertexAttribPointer(modelColorParam, 4, GLES30.GL_FLOAT, false, 0, colorBuffer);
 
+        // Pass in the texture coordinate information
+        if(textureBuffer != null) {
+            GLES30.glVertexAttribPointer(mTextureCoordinateHandle, 2, GLES30.GL_FLOAT, false, 0, textureBuffer);
+            GLES30.glEnableVertexAttribArray(mTextureCoordinateHandle);
+            GLES30.glActiveTexture ( GLES30.GL_TEXTURE0 );
+            GLES30.glBindTexture ( GLES30.GL_TEXTURE_2D, textureID );
+            GLES30.glTexParameteri ( GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_REPEAT );
+            GLES30.glTexParameteri ( GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_REPEAT );
+
+        }
+
         // Enable vertex arrays
         GLES30.glEnableVertexAttribArray(modelPositionParam);
         GLES30.glEnableVertexAttribArray(modelNormalParam);
@@ -146,27 +192,27 @@ public class ModelDrawVR implements Draw {
         GLUtils.checkGlError("Drawing model");
     }
 
-    private float[] createNormals(ArrayList<Vector3D> pixels, float[] normalCoords) {
-
-        ArrayList<Vector3D> faceList = new ArrayList<>();
-
-        //Create surfaceNormal
-        int j = 0;
-        for (int faceIndex = 0; faceIndex < pixels.size(); faceIndex += 3) {
-            Vector3D v1 = pixels.get(faceIndex);
-            Vector3D v2 = pixels.get(faceIndex + 1);
-            Vector3D v3 = pixels.get(faceIndex + 2);
-
-            Vector3D vu = v3.sub(v1);
-            Vector3D vt = v2.sub(v1);
-
-            Vector3D normal = vt.cross(vu);
-            normal.normalize();
-
-            faceList.add(normal);
-            faceList.add(normal);
-            faceList.add(normal);
-        }
+//    private float[] createNormals(ArrayList<Float> pixels, float[] normalCoords) {
+//
+//        ArrayList<Vector3D> faceList = new ArrayList<>();
+//
+//        //Create surfaceNormal
+//        int j = 0;
+//        for (int faceIndex = 0; faceIndex < pixels.size(); faceIndex += 3) {
+//            Vector3D v1 = pixels.get(faceIndex);
+//            Vector3D v2 = pixels.get(faceIndex + 1);
+//            Vector3D v3 = pixels.get(faceIndex + 2);
+//
+//            Vector3D vu = v3.sub(v1);
+//            Vector3D vt = v2.sub(v1);
+//
+//            Vector3D normal = vt.cross(vu);
+//            normal.normalize();
+//
+//            faceList.add(normal);
+//            faceList.add(normal);
+//            faceList.add(normal);
+//        }
 
         //Smoothing surface normals into vertice normals
 //        ArrayList<Vector3D> alreadyCheck = new ArrayList<>();
@@ -218,15 +264,15 @@ public class ModelDrawVR implements Draw {
 //            }
 //        }
 
-        //Add normals into float
-        for (Vector3D normal : faceList) {
-            normalCoords[j++] = normal.getX();
-            normalCoords[j++] = normal.getY();
-            normalCoords[j++] = normal.getZ();
-        }
-
-        return normalCoords;
-    }
+//        //Add normals into float
+//        for (Vector3D normal : faceList) {
+//            normalCoords[j++] = normal.getX();
+//            normalCoords[j++] = normal.getY();
+//            normalCoords[j++] = normal.getZ();
+//        }
+//
+//        return normalCoords;
+//    }
 
     public void setColor(Color color) {
         this.color = color.getFloatRGBA();
