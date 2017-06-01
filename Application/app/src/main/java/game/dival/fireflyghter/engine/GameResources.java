@@ -12,6 +12,7 @@ import java.util.Hashtable;
 
 import game.dival.fireflyghter.engine.draw.Pixel;
 import game.dival.fireflyghter.engine.math.Vector3D;
+import game.dival.fireflyghter.engine.utils.BufferFactory;
 
 /**
  * Created by arauj on 24/02/2017.
@@ -50,22 +51,23 @@ public class GameResources {
     public class Object3D {
         public final Vector3D center;
 
-        public ArrayList<Vector3D> vertexs;
-        public ArrayList<Vector3D[]> faces;
-        public ArrayList<Vector3D> vnormals;
+        public BufferFactory vertBuffer, normalBuffer, textureBuffer;
+        public int vertSize = 0;
 
         private float width, height, depth;
 
         public Object3D(InputStream inputStream) throws IOException {
 
-            vertexs = new ArrayList<>();
-            faces = new ArrayList<>();
-            vnormals = new ArrayList<>();
+            ArrayList<Float> vertFloats = new ArrayList<>();
+            ArrayList<Float> normFloats = new ArrayList<>();
+            ArrayList<Float> textureFloats = new ArrayList<>();
+
+            ArrayList<Vector3D> tempVerts = new ArrayList<>();
             ArrayList<Vector3D> tempNormals = new ArrayList<>();
+            ArrayList<float[]> tempText = new ArrayList<>();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
             String line;
-            int lineNo = 0;
             int vertexNumber = 1;
 
             float minWidth = 0, maxWidth = 0;
@@ -73,7 +75,6 @@ public class GameResources {
             float minDepth = 0, maxDepth = 0;
 
             while ((line = reader.readLine()) != null) {
-                lineNo++;
                 line = line.trim();
                 // handle line continuation marker \
                 while (line.endsWith("\\")) {
@@ -102,13 +103,12 @@ public class GameResources {
 
                 // if vertex
                 if ("v".equals(keyword)) {
-
                     float x = Float.valueOf(tokens[1]);
                     float y = Float.valueOf(tokens[2]);
                     float z = Float.valueOf(tokens[3]);
-                    Pixel vertex = new Pixel(x, y, z);
+                    Vector3D vertex = new Vector3D(x, y, z);
 
-                    if (vertexNumber++ == 1) {
+                    if (vertexNumber == 1) {
                         minWidth = maxWidth = x;
                         minHeight = maxHeight = y;
                         minDepth = maxDepth = z;
@@ -126,10 +126,18 @@ public class GameResources {
                         if (z > maxDepth)
                             maxDepth = z;
                     }
+                    vertexNumber++;
 
-//                    Log.d("Pixel " + vertexNumber++, " x:" + tokens[1] + " y:" + tokens[2] + " z:" + tokens[3]);
-                    vertexs.add(vertex);
+                    tempVerts.add(vertex);
 
+                }
+
+                // if texture coords
+                else if ("vt".equals(keyword)) {
+                    final float v = tokens.length > 2 ? Float.valueOf(tokens[2]) : 0;
+                    final float w = tokens.length > 3 ? Float.valueOf(tokens[3]) : 0;
+                    float[] coord = {v, w};
+                    tempText.add(coord);
                 }
 
                 // if normal vector
@@ -143,35 +151,58 @@ public class GameResources {
 //                    Log.d("VerticeNormal",""+tokens[1]+" "+ tokens[2]+" "+tokens[3]);
                 }
 
-                // if face
+                // if face f 51/12/51 62/12/62 60/12/60
                 if (("f".equals(keyword) || "fo".equals(keyword)) && tokens.length > 1) {
-                    if (tokens.length < 4) {
-                        throw new IOException("Wrong number of args.  f must have at least 3 vertices." +
-                                "(line " + lineNo + ") " + line);
+                    for (int i = 0; i < tokens.length-1; i++) {
+                        if(tokens[i+1].contains("//")) {
+                            String[] faceValues = tokens[i + 1].split("//");
+                            int index = Integer.parseInt(faceValues[0]);
+                            Vector3D v = tempVerts.get(index - 1);
+                            vertFloats.add(v.xyz[0]);
+                            vertFloats.add(v.xyz[1]);
+                            vertFloats.add(v.xyz[2]);
+
+                            index = Integer.parseInt(faceValues[1]);
+                            v = tempNormals.get(index - 1);
+                            normFloats.add(v.xyz[0]);
+                            normFloats.add(v.xyz[1]);
+                            normFloats.add(v.xyz[2]);
+                        } else {
+                            String[] faceValues = tokens[i + 1].split("/");
+                            int index = Integer.parseInt(faceValues[0]);
+                            Vector3D v = tempVerts.get(index - 1);
+                            vertFloats.add(v.xyz[0]);
+                            vertFloats.add(v.xyz[1]);
+                            vertFloats.add(v.xyz[2]);
+
+                            index = Integer.parseInt(faceValues[1]);
+                            float[] vts = tempText.get(index - 1);
+                            textureFloats.add(vts[0]);
+                            textureFloats.add(vts[1]);
+
+                            index = Integer.parseInt(faceValues[2]);
+                            v = tempNormals.get(index - 1);
+                            normFloats.add(v.xyz[0]);
+                            normFloats.add(v.xyz[1]);
+                            normFloats.add(v.xyz[2]);
+                        }
                     }
-
-                    // Each token corresponds to 1 vertex entry and possibly one texture entry and normal entry.
-                    Vector3D[] face = new Pixel[3];
-
-//                    Log.d("Face", line);
-
-
-                    for (int i = 0; i < face.length; i++) {
-                        String[] faceValues = tokens[i + 1].split("//");
-                        int vertexIndex = Integer.parseInt(faceValues[0]);
-                        face[i] = vertexs.get(vertexIndex - 1); //the list begin with 0, different from the obj index
-                        vnormals.add(tempNormals.get(vertexIndex - 1));
-//                        Log.d("Pixel " + vertexIndex, " x:" + face[i].xyz[0] + " y:" + face[i].xyz[1] + " z:" + face[i].xyz[2]);
-                    }
-                    faces.add(face);
                 }
             }
+
+            tempNormals.clear();
+            tempText.clear();
+            tempVerts.clear();
+
+            vertSize = vertFloats.size();
+
+            vertBuffer = new BufferFactory(vertFloats);
+            textureBuffer = new BufferFactory(textureFloats);
+            normalBuffer = new BufferFactory(normFloats);
 
             width = maxWidth - minWidth;
             height = maxHeight - minHeight;
             depth = maxDepth - minDepth;
-
-
 
             center = new Vector3D((maxWidth - minWidth) / 2, (maxHeight - minHeight) / 2, (maxDepth - minDepth) / 2);
 

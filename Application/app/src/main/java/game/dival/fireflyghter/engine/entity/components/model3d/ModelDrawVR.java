@@ -8,20 +8,20 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import game.dival.fireflyghter.R;
 import game.dival.fireflyghter.engine.GameEngine;
+import game.dival.fireflyghter.engine.GameResources;
 import game.dival.fireflyghter.engine.VREngine;
 import game.dival.fireflyghter.engine.VrActivity;
 import game.dival.fireflyghter.engine.draw.Color;
 import game.dival.fireflyghter.engine.entity.Entity;
 import game.dival.fireflyghter.engine.math.Vector3D;
 import game.dival.fireflyghter.engine.renderer.GLUtils;
+import game.dival.fireflyghter.engine.utils.BufferFactory;
 
 /**
  * Created by arauj on 23/03/2017.
@@ -52,31 +52,10 @@ public class ModelDrawVR implements Draw {
 
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
-     *
-     * @param pixels
      */
-    public ModelDrawVR(ArrayList<Vector3D> pixels, ArrayList<Vector3D> normal, GameEngine engine, Entity entity, Color colorObj) {
+    public ModelDrawVR(GameResources.Object3D obj3D, GameEngine engine, Entity entity, Color colorObj) {
         this.entity = entity;
         this.engine = (VREngine) engine;
-
-        //VERTS
-        float[] vertCoords = new float[pixels.size() * 3];
-        int index = 0;
-        for (Vector3D vert : pixels) {
-            vertCoords[index++] = vert.xyz[0];
-            vertCoords[index++] = vert.xyz[1];
-            vertCoords[index++] = vert.xyz[2];
-        }
-
-        //NORMAL
-        float[] normalCoords = new float[vertCoords.length];
-        normalCoords = createNormals(pixels, normalCoords);
-//        index = 0;
-//        for (Vector3D normalVert : normal) {
-//            normalCoords[index++] = normalVert.xyz[0];
-//            normalCoords[index++] = normalVert.xyz[1];
-//            normalCoords[index++] = normalVert.xyz[2];
-//        }
 
         //COLOR
         if (colorObj != null) {
@@ -84,34 +63,20 @@ public class ModelDrawVR implements Draw {
         }
 
         Log.d("Color", Arrays.toString(color));
-        float[] colorCoords = new float[pixels.size() * 4];
-        index = 0;
-        for (int i = 0; i < pixels.size(); i++) {
+        float[] colorCoords = new float[(obj3D.vertSize / 3) * 4];
+        int index = 0;
+        for (int i = 0; i < obj3D.vertSize / 3; i++) {
             colorCoords[index++] = color[0];
             colorCoords[index++] = color[1];
             colorCoords[index++] = color[2];
             colorCoords[index++] = color[3];
         }
 
-        //Create Buffers
-        vertexCount = vertCoords.length / COORDS_PER_VERTEX;
-        ByteBuffer bbVertices = ByteBuffer.allocateDirect(vertCoords.length * 4);
-        bbVertices.order(ByteOrder.nativeOrder());
-        vertexBuffer = bbVertices.asFloatBuffer();
-        vertexBuffer.put(vertCoords);
-        vertexBuffer.flip();
+        vertexCount = obj3D.vertSize / COORDS_PER_VERTEX;
 
-        ByteBuffer bbNormals = ByteBuffer.allocateDirect(normalCoords.length * 4);
-        bbNormals.order(ByteOrder.nativeOrder());
-        normalBuffer = bbNormals.asFloatBuffer();
-        normalBuffer.put(normalCoords);
-        normalBuffer.flip();
-
-        ByteBuffer bbColors = ByteBuffer.allocateDirect(colorCoords.length * 4);
-        bbColors.order(ByteOrder.nativeOrder());
-        colorBuffer = bbColors.asFloatBuffer();
-        colorBuffer.put(colorCoords);
-        colorBuffer.flip();
+        vertexBuffer = obj3D.vertBuffer.getFloatBuffer();
+        normalBuffer = obj3D.normalBuffer.getFloatBuffer();
+        colorBuffer = new BufferFactory(colorCoords).getFloatBuffer();
 
         // prepare shaders and OpenGL program
         int vertexShader = loadGLShader(GLES30.GL_VERTEX_SHADER, R.raw.vertex_shader);
@@ -254,7 +219,7 @@ public class ModelDrawVR implements Draw {
 //        }
 
         //Add normals into float
-        for(Vector3D normal:faceList) {
+        for (Vector3D normal : faceList) {
             normalCoords[j++] = normal.getX();
             normalCoords[j++] = normal.getY();
             normalCoords[j++] = normal.getZ();
