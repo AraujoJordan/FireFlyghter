@@ -95,9 +95,7 @@ public class VREngine extends GameEngine {
 
     public void draw() {
         for (Entity entity : entities) {
-            if (entity.getTransformation() != null)
-                entity.run(this);
-            if (entity.getModel3D() != null)
+            if (entity.getTransformation() != null || entity.getModel3D() != null)
                 entity.run(this);
 
             if (camera.getPhysics() != null)

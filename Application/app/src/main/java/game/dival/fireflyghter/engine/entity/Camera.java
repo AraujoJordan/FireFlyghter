@@ -47,10 +47,6 @@ public class Camera extends Entity {
                 0, 1, 0);
 
         if (entityToFollowCamera != null) {
-
-
-
-
             float[] euler = new float[3];
             headTransform.getEulerAngles(euler,0);
 

@@ -14,10 +14,7 @@ public abstract class Component {
         this.parentEntity = entity;
     }
 
-    public Component() {
-    }
-
-    ;
+    public Component() {}
 
     public abstract void run(GameEngine engine);
 }
